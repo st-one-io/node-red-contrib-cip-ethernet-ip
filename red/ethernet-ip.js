@@ -130,6 +130,16 @@ module.exports = function (RED) {
             return tags;
         };
 
+        node.getAllTagValues = function getAllTagValues() {
+            let res = {};
+
+            node._plc.forEach(tag => {
+                res[tag.name] = tag.value;
+            });
+
+            return res;
+        };
+
         function manageStatus(newStatus) {
             if (status == newStatus) return;
 
@@ -279,6 +289,15 @@ module.exports = function (RED) {
             node.status(generateStatus(node.endpoint.getStatus(), data));
         }
 
+        function onChangedAllValues() {
+            let msg = {
+                payload: node.endpoint.getAllTagValues()
+            };
+
+            node.send(msg);
+            node.status(generateStatus(node.endpoint.getStatus()));
+        }
+
         function onEndpointStatus(s) {
             node.status(generateStatus(s.status, statusVal));
         }
@@ -296,8 +315,10 @@ module.exports = function (RED) {
 
             tag.on('Initialized', onChanged);
             tag.on('Changed', onChanged);
-        } else {
+        } else if (config.mode === 'all-split') {
             node.endpoint.on('__ALL_CHANGED__', onChanged);
+        } else {
+            node.endpoint.on('__ALL_CHANGED__', onChangedAllValues);
         }
 
         node.status(generateStatus("connecting", ""));
@@ -306,6 +327,7 @@ module.exports = function (RED) {
 
         node.on('close', function (done) {
             node.endpoint.removeListener('__ALL_CHANGED__', onChanged);
+            node.endpoint.removeListener('__ALL_CHANGED__', onChangedAllValues);
             node.endpoint.removeListener('__STATUS__', onEndpointStatus);
             if (tag) {
                 tag.removeListener('Initialized', onChanged);
