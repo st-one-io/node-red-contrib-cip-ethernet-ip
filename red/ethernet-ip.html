@@ -111,7 +111,7 @@
 	var dataTypes = ["", "BOOL", "SINT", "INT", "DINT", "LINT", "USINT", "UINT", "UDINT", "REAL", "LREAL", "STIME", "DATE", "TIME_AND_DAY", "DATE_AND_STRING", "STRING", "WORD", "DWORD", "BIT_STRING", "LWORD", "STRING2", "FTIME", "LTIME", "ITIME", "STRINGN", "SHORT_STRING", "TIME", "EPATH", "ENGUNIT", "STRINGI", "STRUCT"];
 
 	function debuglog(){
-		console.log(arguments);
+		//console.log(arguments);
 	}
 
 	function generateVarTable(){
@@ -386,6 +386,11 @@
 
 					buttonAddVar.click(function (evt) {
 						ol.editableList('addItem', {});
+						evt.stopPropagation();
+						evt.preventDefault();
+					});
+					buttonDelProg.click(function (evt) {
+						progContainer.editableList('removeItem', container.data('data'));
 						evt.stopPropagation();
 						evt.preventDefault();
 					});
