@@ -101,15 +101,20 @@ module.exports = function (RED) {
         for (let prog of Object.keys(config.vartable)) {
 
             for (let varname of Object.keys(config.vartable[prog])) {
+                if(!varname){
+                    //skip empty values
+                    continue;
+                }
+
                 let obj = config.vartable[prog][varname];
                 let type = (obj.type || '').toString().toUpperCase();
                 let dt = eip.EthernetIP.CIP.DataTypes.Types[type] || null;
 
-                let tag = new Tag(varname, prog || null, dt);
-                
                 if (isVerbose) {
-                    node.log(RED._("ethip.info.tagregister") + `: ${tag.name}`);
+                    node.log(RED._("ethip.info.tagregister") + `: Name:[${varname}], Prog:[${prog}], Type:[${dt}](${type})`);
                 }
+                
+                let tag = new Tag(varname, prog || null, dt);
                 
                 tag.on('Initialized', onTagChanged);
                 tag.on('Changed', onTagChanged);
