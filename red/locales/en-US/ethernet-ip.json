@@ -5,24 +5,24 @@
                 "name": "eth-ip in",
                 "endpoint": "PLC",
                 "mode": "Mode",
-                "program": "Program",
-                "variable": "Variable",
-                "variable-select": "Select a variable",
-                "variable-novar": "No variables"
+                "program": "Scope",
+                "variable": "Tag",
+                "variable-select": "Select a tag",
+                "variable-novar": "No tags"
             },
             "mode": {
-                "single": "Single variable",
-                "all-split": "All variables, one per message",
-                "all": "All variables"
+                "single": "Single tag",
+                "all-split": "All tags, one per message",
+                "all": "All tags"
             }
         },
         "out": {
             "label": {
                 "name": "eth-ip out",
                 "endpoint": "PLC",
-                "program": "Program",
-                "variable": "Variable",
-                "variable-select": "Select a variable",
+                "program": "Scope",
+                "variable": "Tag",
+                "variable-select": "Select a tag",
                 "global": "<Global>"
             },
             "disclaimer": "Caution when writing data to production PLCs!"
@@ -34,16 +34,16 @@
                 "cycletime": "Cycle time",
                 "tabs": {
                     "connection": "Connection",
-                    "variables": "Variables"
+                    "variables": "Tags"
                 },
                 "variables": {
-                    "list": "Variable list",
+                    "list": "Tag list",
                     "add": "Add",
                     "clean": "Remove all",
                     "del": "Remove",
                     "name": "Name",
                     "addr": "Address",
-                    "program": "Program",
+                    "program": "Scope",
                     "tag": "Tag",
                     "export": "Export",
                     "import": "Import",
