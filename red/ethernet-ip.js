@@ -253,14 +253,14 @@ module.exports = function (RED) {
             manageStatus('connecting');
 
             if (isVerbose) {
-                node.log(RED._("ethip.info.connect"));
+                node.log(RED._("ethip.info.connect") + `: ${config.address} / ${config.slot}`);
             }
 
             connected = false;
             node._plc = new Controller();
             node._plc.on("error", onControllerError);
             node._plc.on("end", onControllerEnd);
-            node._plc.connect(config.address, config.slot || 0).then(onConnect).catch(onConnectError);
+            node._plc.connect(config.address, Number(config.slot) || 0).then(onConnect).catch(onConnectError);
         }
 
         node.on('close', onNodeClose);
