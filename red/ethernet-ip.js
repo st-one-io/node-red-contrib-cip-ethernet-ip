@@ -204,6 +204,11 @@ module.exports = function (RED) {
             if(closing) {
                 destroyPLC();
                 return;
+            } else {
+                //reset tag values, in case we're dropping the connection because of a wrong value
+                node._plc.forEach((tag) => {
+                    tag.value = null;
+                });
             }
 
             //try to reconnect if failed to connect
@@ -303,7 +308,7 @@ module.exports = function (RED) {
             };
 
             node.send(msg);
-            node.status(generateStatus(node.endpoint.getStatus(), data));
+            node.status(generateStatus(node.endpoint.getStatus(), config.mode === 'single' ? data : null));
         }
 
         function onChangedAllValues() {
@@ -316,7 +321,7 @@ module.exports = function (RED) {
         }
 
         function onEndpointStatus(s) {
-            node.status(generateStatus(s.status, statusVal));
+            node.status(generateStatus(s.status, config.mode === 'single' ? statusVal : null));
         }
 
         if (config.mode === 'single') {
