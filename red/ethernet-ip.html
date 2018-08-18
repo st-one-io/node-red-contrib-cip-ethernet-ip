@@ -475,7 +475,10 @@
 				value: "single"
 			},
 			variable: {
-				value: ""
+				value: "",
+				validate: function (value) {
+					return this.mode == "single" ? !!value : true;
+				}
 			},
 			program: {
 				value: ""
@@ -522,20 +525,13 @@
 					disabled: "disabled",
 					selected: "selected",
 					style: "display:none;",
-					text: self._("ethip.out.label.variable-select"),
+					text: self._("ethip.in.label.variable-select"),
 					value: ""
 				}));
 
 				if (!cleanProg) return;
 
 				$('#node-input-program option').remove();
-				varList.append($('<option/>', {
-					disabled: "disabled",
-					selected: "selected",
-					style: "display:none;",
-					text: self._("ethip.out.label.program-select"),
-					value: ""
-				}));
 			}
 
 			function updateProgList(endpointId) {
@@ -591,6 +587,21 @@
 				}
 			});
 			modeList.change();
+		},
+		oneditsave: function() {
+			var endpointNode = RED.nodes.node($("#node-input-endpoint").val());
+			var progValue = $('#node-input-program').val();
+			var varValue = $('#node-input-variable').val();
+
+			if(!endpointNode) return;
+
+			//validate: cleanup fields if they don't exist on the endpoint 
+			if(!endpointNode.vartable[progValue]){
+				this.program = "";
+				this.variable = "";
+			} else if (!endpointNode.vartable[progValue][varValue]) {
+				this.variable = "";
+			}
 		}
 	});
 </script>
@@ -686,13 +697,6 @@
 				if(!cleanProg) return;
 
 				$('#node-input-program option').remove();
-				varList.append($('<option/>', {
-					disabled: "disabled",
-					selected: "selected",
-					style: "display:none;",
-					text: self._("ethip.out.label.program-select"),
-					value: ""
-				}));
 			}
 
 			function updateProgList(endpointId) {
@@ -739,6 +743,21 @@
 				updateProgList(endpointList.val());
 			});
 			updateProgList(self.endpoint);
+		},
+		oneditsave: function () {
+			var endpointNode = RED.nodes.node($("#node-input-endpoint").val());
+			var progValue = $('#node-input-program').val();
+			var varValue = $('#node-input-variable').val();
+
+			if (!endpointNode) return;
+
+			//validate: cleanup fields if they don't exist on the endpoint 
+			if (!endpointNode.vartable[progValue]) {
+				this.program = "";
+				this.variable = "";
+			} else if (!endpointNode.vartable[progValue][varValue]) {
+				this.variable = "";
+			}
 		}
 	});
 </script>

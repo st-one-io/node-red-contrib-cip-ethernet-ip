@@ -8,6 +8,7 @@
                 "program": "Scope",
                 "variable": "Tag",
                 "variable-select": "Select a tag",
+                "program-select": "Select a scope",
                 "variable-novar": "No tags"
             },
             "mode": {
@@ -23,6 +24,7 @@
                 "program": "Scope",
                 "variable": "Tag",
                 "variable-select": "Select a tag",
+                "program-select": "Select a scope",
                 "global": "<Global>"
             },
             "disclaimer": "Caution when writing data to production PLCs!"
