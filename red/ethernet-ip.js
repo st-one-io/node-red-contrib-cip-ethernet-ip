@@ -169,7 +169,7 @@ module.exports = function (RED) {
             }
 
             node._plc.scan_rate = parseInt(config.cycletime) || 500;
-            node._plc.scan().catch(onControllerError);
+            node._plc.scan().catch(onScanError);
         }
 
         function onConnectError(err) {
@@ -180,6 +180,16 @@ module.exports = function (RED) {
         function onControllerError(err) {
             node.error(RED._("ethip.error.onerror") + err.toString(), {});
             onControllerEnd();
+        }
+
+        function onScanError(err) {
+            if (closing) {
+                //closing the connection will cause a timeout error, so let's just skip it
+                return;
+            }
+
+            //proceed to cleanup and reconnect
+            onControllerError(err);
         }
 
         function onControllerEnd() {
