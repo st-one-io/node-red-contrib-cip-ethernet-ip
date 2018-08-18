@@ -173,12 +173,14 @@ module.exports = function (RED) {
         }
 
         function onConnectError(err) {
-            node.error(RED._("ethip.error.onconnect") + err.toString(), {});
+            let errStr = err instanceof Error ? err.toString() : JSON.stringify(err);
+            node.error(RED._("ethip.error.onconnect") + errStr, {});
             onControllerEnd();
         }
 
         function onControllerError(err) {
-            node.error(RED._("ethip.error.onerror") + err.toString(), {});
+            let errStr = err instanceof Error ? err.toString() : JSON.stringify(err);
+            node.error(RED._("ethip.error.onerror") + errStr, {});
             onControllerEnd();
         }
 
@@ -323,9 +325,9 @@ module.exports = function (RED) {
 
             if (!tag) {
                 //shouldn't reach here. But just in case..
-                return node.error("ethip.error.invalidvar", {
+                return node.error(RED._("ethip.error.invalidvar", {
                     varname: tagName
-                });
+                }));
             }
 
             tag.on('Initialized', onChanged);
@@ -382,9 +384,9 @@ module.exports = function (RED) {
 
         if (!tag) {
             //shouldn't reach here. But just in case..
-            return node.error("ethip.error.invalidvar", {
+            return node.error(RED._("ethip.error.invalidvar", {
                 varname: tagName
-            });
+            }));
         }
 
         node.status(generateStatus("connecting", ""));
