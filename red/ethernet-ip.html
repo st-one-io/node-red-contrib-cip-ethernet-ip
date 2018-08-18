@@ -453,12 +453,12 @@
 </script>
 
 <script type="text/x-red" data-help-name="eth-ip in">
-	<p>Reads data from a PLC variable</p>
+	<p>Reads data from a PLC</p>
 	<p>All data is read cyclically from the PLC as configured in the <i>ethip endpoint</i>, but there are three modes of making it available in a flow:</p>
 	<ul>
-		<li><b>Single variable:</b> A single variable can be selected from the configured variables, and a message is sent every cycle, or only when it changes if <i>diff</i> is checked. <code>msg.payload</code> contains the variable's value and <code>msg.topic</code> has the variable's name.</li>
-		<li><b>All variables, one per message:</b> Like the <i>Single variable</i> mode, but for all variables configured. If <i>diff</i> is checked, a message is sent everytime any variable changes. If <i>diff</i> is unchecked, one message is sent for every variable, in every cycle. Care must be taken about the number of messages per second in this mode.</li>
-		<li><b>All variables:</b> In this mode, <code>msg.payload</code> contains an object with all configured variables and their values. If <i>diff</i> is checked, a message is sent if at least one of the variables changes its value.</li>
+		<li><b>Single tag:</b> A single tag can be selected from the configured tags, and a message is sent every time it changes. <code>msg.payload</code> contains the tag's value and <code>msg.topic</code> has the tag's name.</li>
+		<li><b>All tags, one per message:</b> Like the <i>Single tag</i> mode, but for all tags configured.
+		<li><b>All tags:</b> In this mode, <code>msg.payload</code> contains an object with all configured tags and their values. A message is sent if at least one of the variables changes its value.</li>
 	</ul>
 </script>
 
@@ -631,8 +631,8 @@
 </script>
 
 <script type="text/x-red" data-help-name="eth-ip out">
-  <p>Writes <code>msg.payload</code> to a memory area in a PLC variable</p>
-  <p>The variable name can be configured in the node and takes precedence. If left blank it should be set by <code>msg.variable</code> on the incoming message.</p>
+  <p>Writes <code>msg.payload</code> to a selected PLC tag</p>
+  <!--<p>The tag name can be configured in the node and takes precedence. If left blank it should be set by <code>msg.variable</code> on the incoming message.</p>-->
   <p><b>Warning:</b> Caution when writing data to production PLCs!</p>
 </script>
 
