@@ -42,7 +42,6 @@
 	.node-input-variables-container-row .red-ui-editableList-container{
 		padding: 0;
 		min-height: 300px;
-		height: auto;
 	}
 	.eth-ip-vars-prog-item .red-ui-editableList-container{
 		border-radius: 0;
@@ -59,7 +58,7 @@
     <div class="form-row">
 		<ul style="background: #fff; min-width: 600px; margin-bottom: 20px;" id="node-config-ethip-endpoint-tabs"></ul>
 	</div>
-	<div id="node-config-ethip-endpoint-tabs-content" style="min-height: 170px;">
+	<div id="node-config-ethip-endpoint-tabs-content" style="min-height: 170px; height: 95%">
 		<div id="ethip-endpoint-tab-connection" style="display:none">
 			<div class="form-row">
 				<label for="node-config-input-address"><i class="fa fa-globe"></i> <span data-i18n="ethip.endpoint.label.address"></span></label>
@@ -76,16 +75,16 @@
 				<input type="text" id="node-config-input-name" data-i18n="[placeholder]ethip.label.name">
 			</div>
 		</div>
-		<div id="ethip-endpoint-tab-variables" style="display:none">
-			<div class="form-row eth-ip-vars-button-group" style="margin-bottom:0;">
+		<div id="ethip-endpoint-tab-variables" style="display:none; height: 90%;">
+			<div class="form-row eth-ip-vars-button-group" style="margin-bottom:0; height: 5%">
 				<a href="#" class="editor-button editor-button-small eth-ip-vars-btn-clean" style="margin: 4px; float: right;"><i class="fa fa-trash-o"></i> <span data-i18n="ethip.endpoint.label.variables.clean"></span></a>
 				<a href="#" class="editor-button editor-button-small eth-ip-vars-btn-add-prog" style="margin: 4px; float: right;"><i class="fa fa-plus"></i> <span data-i18n="ethip.endpoint.label.variables.add"></span></a>
 				<a href="#" class="editor-button editor-button-small eth-ip-vars-btn-expand" style="margin: 4px; float: right;"><i class="fa fa-angle-double-down"></i></a>
 				<a href="#" class="editor-button editor-button-small eth-ip-vars-btn-collapse" style="margin: 4px; float: right;"><i class="fa fa-angle-double-up"></i></a>
 				<label><b><span data-i18n="ethip.endpoint.label.variables.list"></b></span></label>
 			</div>
-			<div class="form-row node-input-variables-container-row" style="margin-bottom: 0px;">
-				<ol id="node-config-input-variables-container" style="ming-height: 250px; min-width: 450px"></ol>
+			<div class="form-row node-input-variables-container-row" style="margin-bottom: 0px; max-height: 100%; overflow-y: auto">
+				<ol id="node-config-input-variables-container" style="min-height: 250px; min-width: 450px;"></ol>
 			</div>
 			<div class="form-row">
 				<a href="#" class="editor-button editor-button-small eth-ip-vars-btn-export" style="margin: 4px; float: right"><i class="fa fa-download"></i> <span data-i18n="ethip.endpoint.label.variables.export"></span></a>
@@ -504,7 +503,7 @@
 				}
 				return this.variable || endpointNode.label();
 			}
-			return this._("ethip.out.label.name");
+			return this._("ethip.in.label.name");
 		},
 		labelStyle: function() {
 			return this.name ? "node_label_italic" : "";
