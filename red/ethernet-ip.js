@@ -139,7 +139,7 @@ module.exports = function (RED) {
             let res = {};
 
             node._plc.forEach(tag => {
-                res[tag.name] = tag.value;
+                res[tag.name] = tag.controller_value;
             });
 
             return res;
