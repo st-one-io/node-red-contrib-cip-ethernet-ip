@@ -113,6 +113,11 @@ module.exports = function (RED) {
                 if (isVerbose) {
                     node.log(RED._("ethip.info.tagregister") + `: Name:[${varname}], Prog:[${prog}], Type:[${dt}](${type})`);
                 }
+
+                if (!Tag.isValidTagname(varname)){
+                    node.warn(RED._("ethip.warn.invalidtagname", {name: varname}));
+                    continue;
+                }
                 
                 let tag = new Tag(varname, prog || null, dt);
                 

@@ -78,6 +78,9 @@
             "disconnect": "Closing connection to PLC",
             "tagregister": "Registering tag"
         },
+        "warn": {
+            "invalidtagname": "Skipping tag with invalid name '__name__'"
+        },
         "addrval": {
             "MULTCOMMA": "Invalid address with multiple commas",
             "DB": "Invalid DB address",
