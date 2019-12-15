@@ -21,4 +21,6 @@ The Software is provided "AS IS", without warranty of any kind. The Licensor mak
 
 License
 -----------
-Copyright 2016-2018 Smart-Tech, [Apache 2.0 license](LICENSE).
+Copyright: (c) 2016-2019, Smart-Tech, Guilherme Francescon Cittolin <guilherme.francescon@netsmarttech.com>
+
+GNU General Public License v3.0+ (see [LICENSE](LICENSE) or https://www.gnu.org/licenses/gpl-3.0.txt)
