@@ -4,6 +4,15 @@
   GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 */
 
+function nrInputShim(node, fn) {
+    function doErr(err) { err && node.error(err) }
+    node.on('input', function (msg, send, done) {
+        send = send || node.send;
+        done = done || doErr;
+        fn(msg, send, done);
+    });
+}
+
 module.exports = function (RED) {
     "use strict";
 
@@ -371,10 +380,13 @@ module.exports = function (RED) {
             node.status(generateStatus(s.status, statusVal));
         }
 
-        function onNewMsg(msg) {
+        function onNewMsg(msg, send, done) {
             //the actual write will be performed by the scan cycle
             //of the Controller on the endpoint
             tag.value = statusVal = msg.payload;
+            // we currently have no feedback of the written value, so
+            // let's just call done() here
+            done();
 
             node.status(generateStatus(node.endpoint.getStatus(), statusVal));
         }
@@ -391,7 +403,7 @@ module.exports = function (RED) {
 
         node.status(generateStatus("connecting", ""));
 
-        node.on('input', onNewMsg);
+        nrInputShim(node, onNewMsg);
         node.endpoint.on('__STATUS__', onEndpointStatus);
 
         node.on('close', function (done) {
