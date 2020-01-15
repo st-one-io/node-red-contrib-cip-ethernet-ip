@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.1.1
+ - Hotfix - Avoids connection leak of 'ethernet-ip'
+
 ## Version 1.1.0
  - Implements Node-RED 1.0 API
  - Changes node's category to "plc"

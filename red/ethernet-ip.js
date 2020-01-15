@@ -4,6 +4,8 @@
   GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 */
 
+const net = require('net');
+
 function nrInputShim(node, fn) {
     function doErr(err) { err && node.error(err) }
     node.on('input', function (msg, send, done) {
@@ -226,6 +228,7 @@ module.exports = function (RED) {
                 //TODO remove listeners
                 node._plc.removeListener("error", onControllerError);
                 node._plc.removeListener("end", onControllerEnd);
+                net.Socket.prototype.destroy.call(node._plc);
                 node._plc = null;
             }
         }
