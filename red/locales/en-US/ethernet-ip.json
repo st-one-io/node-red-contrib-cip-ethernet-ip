@@ -14,7 +14,8 @@
             "mode": {
                 "single": "Single tag",
                 "all-split": "All tags, one per message",
-                "all": "All tags"
+                "all": "All tags",
+                "byFlag":"All tags, Except Flag"
             }
         },
         "out": {

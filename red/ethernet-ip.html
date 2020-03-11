@@ -422,6 +422,7 @@
 			<option value="single" data-i18n="ethip.in.mode.single"></option>
 			<option value="all-split" data-i18n="ethip.in.mode.all-split"></option>
 			<option value="all" data-i18n="ethip.in.mode.all"></option>
+			<option value="byFlag" data-i18n="ethip.in.mode.byFlag"></option>
 		</select>
 	</div>
 	<div class="form-row ethip-input-var-row">
@@ -447,6 +448,7 @@
 		<li><b>Single tag:</b> A single tag can be selected from the configured tags, and a message is sent every time it changes. <code>msg.payload</code> contains the tag's value and <code>msg.topic</code> has the tag's name.</li>
 		<li><b>All tags, one per message:</b> Like the <i>Single tag</i> mode, but for all tags configured.
 		<li><b>All tags:</b> In this mode, <code>msg.payload</code> contains an object with all configured tags and their values. A message is sent if at least one of the variables changes its value.</li>
+		<li><b>All tags, Except Flag:</b> In this mode, <code>msg.payload</code> contains an object with the flag's current value. <code>msg.values</code>  contains an object with all configured tags and their values excluding the flag. A message is sent if only the flag's value is changed.</li>
 	</ul>
 </script>
 
@@ -558,10 +560,9 @@
 					}
 				});
 			}
-
 			progList.change(function () {
 				updateVarList(progList.val());
-			});
+				});
 			endpointList.change(function () {
 				updateProgList(endpointList.val());
 			});
@@ -570,9 +571,16 @@
 			modeList.change(function () {
 				if (modeList.val() == "single") {
 					varDivs.show();
-				} else {
+				}
+				 else {
 					varDivs.hide();
 				}
+				
+				if(modeList.val()=="byFlag")
+				{
+					varDivs.show();
+				}
+					
 			});
 			modeList.change();
 		},
@@ -580,9 +588,7 @@
 			var endpointNode = RED.nodes.node($("#node-input-endpoint").val());
 			var progValue = $('#node-input-program').val();
 			var varValue = $('#node-input-variable').val();
-
 			if(!endpointNode) return;
-
 			//validate: cleanup fields if they don't exist on the endpoint 
 			if(!endpointNode.vartable[progValue]){
 				this.program = "";
@@ -736,7 +742,6 @@
 			var endpointNode = RED.nodes.node($("#node-input-endpoint").val());
 			var progValue = $('#node-input-program').val();
 			var varValue = $('#node-input-variable').val();
-
 			if (!endpointNode) return;
 
 			//validate: cleanup fields if they don't exist on the endpoint 
