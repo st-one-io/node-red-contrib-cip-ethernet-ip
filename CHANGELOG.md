@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.1.2
+ - Fixes UI on Node-RED 1.0
+ - Update licensing information and branding
+
 ## Version 1.1.1
  - Hotfix - Avoids connection leak of 'ethernet-ip'
 

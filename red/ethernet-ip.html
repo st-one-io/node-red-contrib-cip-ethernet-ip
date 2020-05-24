@@ -22,10 +22,10 @@
 		padding: 0;
 	}
 	input.eth-ip-vars-var-name {
-		width: 50%;
+		width: 50% !important;
 	}
 	select.eth-ip-vars-var-type {
-		width: 40%;
+		width: 40% !important;
 		margin-left: 5px;
 	}
 	.node-input-variables-container-row .red-ui-editableList-container{
@@ -86,6 +86,7 @@
 
 <script type="text/x-red" data-help-name="eth-ip endpoint">
 	<p>Represents a PLC connection</p>
+	<p>This node was created by <a href="https://netsmarttech.com" target="_blank">Smart-Tech</a> as part of the <a href="https://netsmarttech.com/page/st-one" target="_blank">ST-One</a> project</p>
 </script>
 
 <script type="text/javascript">
@@ -442,6 +443,7 @@
 
 <script type="text/x-red" data-help-name="eth-ip in">
 	<p>Reads data from a PLC</p>
+	<p>This node was created by <a href="https://netsmarttech.com" target="_blank">Smart-Tech</a> as part of the <a href="https://netsmarttech.com/page/st-one" target="_blank">ST-One</a> project</p>
 	<p>All data is read cyclically from the PLC as configured in the <i>ethip endpoint</i>, but there are three modes of making it available in a flow:</p>
 	<ul>
 		<li><b>Single tag:</b> A single tag can be selected from the configured tags, and a message is sent every time it changes. <code>msg.payload</code> contains the tag's value and <code>msg.topic</code> has the tag's name.</li>
@@ -620,6 +622,7 @@
 
 <script type="text/x-red" data-help-name="eth-ip out">
   <p>Writes <code>msg.payload</code> to a selected PLC tag</p>
+  <p>This node was created by <a href="https://netsmarttech.com" target="_blank">Smart-Tech</a> as part of the <a href="https://netsmarttech.com/page/st-one" target="_blank">ST-One</a> project</p>
   <!--<p>The tag name can be configured in the node and takes precedence. If left blank it should be set by <code>msg.variable</code> on the incoming message.</p>-->
   <p><b>Warning:</b> Caution when writing data to production PLCs!</p>
 </script>
