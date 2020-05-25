@@ -150,6 +150,18 @@ module.exports = function (RED) {
 
             return res;
         };
+        node.getAllTagValuesNoFlag = function getAllTagValuesNoFlag(flag) {
+            let res = {};
+
+            node._plc.forEach(tag => {
+                if(tag.name != flag.name)
+                {
+                    res[tag.name] = tag.controller_value;
+                }
+            });
+
+            return res;
+        };
 
         function manageStatus(newStatus) {
             if (status == newStatus) return;
@@ -317,7 +329,16 @@ module.exports = function (RED) {
             node.send(msg);
             node.status(generateStatus(node.endpoint.getStatus(), config.mode === 'single' ? data : null));
         }
-
+        function onFlagChanged(tag, lastValue)
+        {
+            let flag = tag.controller_value;
+            let msg = {
+                payload:flag,
+                values: node.endpoint.getAllTagValuesNoFlag(tag)
+            };
+            node.send(msg);
+            node.status(generateStatus(node.endpoint.getStatus(), config.mode === 'single' ? data : null));
+        }
         function onChangedAllValues() {
             let msg = {
                 payload: node.endpoint.getAllTagValues()
@@ -346,8 +367,31 @@ module.exports = function (RED) {
             tag.on('Changed', onChanged);
         } else if (config.mode === 'all-split') {
             node.endpoint.on('__ALL_CHANGED__', onChanged);
-        } else {
-            node.endpoint.on('__ALL_CHANGED__', onChangedAllValues);
+        } else if (config.mode ==='byFlag'){
+            let tagName = `${config.program}:${config.variable}`;
+            tag = node.endpoint.getTag(tagName);
+            if (!tag) {
+                //shouldn't reach here. But just in case..
+                return node.error(RED._("ethip.error.invalidvar", {
+                    varname: tagName
+                }));
+            } 
+            tag.on('Initialized', onFlagChanged);
+            tag.on('Changed', onFlagChanged);
+        }
+        else {
+            let tagName = `${config.program}:${config.variable}`;
+            tag = node.endpoint.getTag(tagName);
+
+            if (!tag) {
+                //shouldn't reach here. But just in case..
+                return node.error(RED._("ethip.error.invalidvar", {
+                    varname: tagName
+                }));
+            }
+
+            tag.on('Initialized', onFlagChanged);
+            tag.on('Changed', onFlagChanged);
         }
 
         node.status(generateStatus("connecting", ""));
@@ -361,6 +405,8 @@ module.exports = function (RED) {
             if (tag) {
                 tag.removeListener('Initialized', onChanged);
                 tag.removeListener('Changed', onChanged);
+                tag.removeListener('Initialized', onFlagChanged);
+                tag.removeListener('Changed', onFlagChanged);
             }
             done();
         });
