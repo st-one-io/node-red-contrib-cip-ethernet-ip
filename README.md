@@ -3,7 +3,7 @@ node-red-contrib-cip-ethernet-ip
 A Node-RED node to interact with Allen Bradley / Rockwell PLCs using the EtherNet/IP protocol.
 Based on the awesome work of [cmseaton42/node-ethernet-ip](https://github.com/cmseaton42/node-ethernet-ip).
 
-This node was created by [Smart-Tech](https://netsmarttech.com) as part of the [ST-One](https://netsmarttech.com/page/st-one) project.
+This node was created as part of the [ST-One](https://st-one.io) project.
 
 This is a work in progress. Please be cautios when communicating with PLCs in production. Feedback is alwaws welcome!
 
@@ -21,6 +21,6 @@ The Software is provided "AS IS", without warranty of any kind. The Licensor mak
 
 License
 -----------
-Copyright: (c) 2016-2020, Smart-Tech, Guilherme Francescon Cittolin <guilherme.francescon@netsmarttech.com>
+Copyright: (c) 2016-2020, ST-One Ltda., Guilherme Francescon Cittolin <guilherme@st-one.io>
 
 GNU General Public License v3.0+ (see [LICENSE](LICENSE) or https://www.gnu.org/licenses/gpl-3.0.txt)

@@ -1,5 +1,5 @@
 <!--
-  Copyright: (c) 2016-2019, Smart-Tech Controle e Automação
+  Copyright: (c) 2016-2020, ST-One Ltda., Guilherme Francescon Cittolin <guilherme@st-one.io>
   GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 -->
 
@@ -86,7 +86,7 @@
 
 <script type="text/x-red" data-help-name="eth-ip endpoint">
 	<p>Represents a PLC connection</p>
-	<p>This node was created by <a href="https://netsmarttech.com" target="_blank">Smart-Tech</a> as part of the <a href="https://netsmarttech.com/page/st-one" target="_blank">ST-One</a> project</p>
+	<p>This node was created as part of the <a href="https://st-one.io" target="_blank">ST-One</a> project</p>
 </script>
 
 <script type="text/javascript">
@@ -443,7 +443,7 @@
 
 <script type="text/x-red" data-help-name="eth-ip in">
 	<p>Reads data from a PLC</p>
-	<p>This node was created by <a href="https://netsmarttech.com" target="_blank">Smart-Tech</a> as part of the <a href="https://netsmarttech.com/page/st-one" target="_blank">ST-One</a> project</p>
+	<p>This node was created as part of the <a href="https://st-one.io" target="_blank">ST-One</a> project</p>
 	<p>All data is read cyclically from the PLC as configured in the <i>ethip endpoint</i>, but there are three modes of making it available in a flow:</p>
 	<ul>
 		<li><b>Single tag:</b> A single tag can be selected from the configured tags, and a message is sent every time it changes. <code>msg.payload</code> contains the tag's value and <code>msg.topic</code> has the tag's name.</li>
@@ -622,7 +622,7 @@
 
 <script type="text/x-red" data-help-name="eth-ip out">
   <p>Writes <code>msg.payload</code> to a selected PLC tag</p>
-  <p>This node was created by <a href="https://netsmarttech.com" target="_blank">Smart-Tech</a> as part of the <a href="https://netsmarttech.com/page/st-one" target="_blank">ST-One</a> project</p>
+	<p>This node was created as part of the <a href="https://st-one.io" target="_blank">ST-One</a> project</p>
   <!--<p>The tag name can be configured in the node and takes precedence. If left blank it should be set by <code>msg.variable</code> on the incoming message.</p>-->
   <p><b>Warning:</b> Caution when writing data to production PLCs!</p>
 </script>

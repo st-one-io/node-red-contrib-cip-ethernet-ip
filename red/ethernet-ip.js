@@ -1,6 +1,6 @@
 //@ts-check
 /*
-  Copyright: (c) 2016-2019, Smart-Tech Controle e Automação
+  Copyright: (c) 2016-2020, St-One Ltda., Guilherme Francescon Cittolin <guilherme@st-one.io>
   GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 */
 

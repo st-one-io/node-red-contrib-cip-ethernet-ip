@@ -8,10 +8,10 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/netsmarttech/node-red-contrib-ethernet-ip.git"
+        "url": "https://github.com/st-one-io/node-red-contrib-cip-ethernet-ip.git"
     },
     "bugs": {
-        "url": "https://github.com/netsmarttech/node-red-contrib-ethernet-ip/issues"
+        "url": "https://github.com/st-one-io/node-red-contrib-cip-ethernet-ip/issues"
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
@@ -38,6 +38,6 @@
             "ethernet-ip": "red/ethernet-ip.js"
         }
     },
-    "author": "Smart-Tech",
-    "license": "Apache-2.0"
+    "author": "ST-One Ltda.",
+    "license": "GPL-3.0-or-later"
 }
