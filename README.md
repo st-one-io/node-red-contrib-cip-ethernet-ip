@@ -5,7 +5,7 @@ Based on the awesome work of [cmseaton42/node-ethernet-ip](https://github.com/cm
 
 This node was created by [Smart-Tech](https://netsmarttech.com) as part of the [ST-One](https://netsmarttech.com/page/st-one) project.
 
-This is a work in progress. Please be cautios when communicating with PLCs in production. Feedback is alwaws welcome!
+This is a work in progress. Please be cautious when communicating with PLCs in production. Feedback is always welcome!
 
 TODO
 ----
