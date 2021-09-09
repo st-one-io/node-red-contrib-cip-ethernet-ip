@@ -222,10 +222,10 @@ module.exports = function (RED) {
         }
 
         function onControllerClose(err) {
-            this.state.session.established = false;
-            this.state.TCP.established = false;
-            if (err) {
-                node.error(RED._("ethip.error.onerror") + "Socket Transmission Failure Occurred!", {});
+            try {
+                node._plc._handleCloseEvent(err);
+            } catch (e) {
+                node.error(`${RED._("ethip.error.onerror")} ${e.message}`, {});
             }
         }
 
@@ -291,7 +291,7 @@ module.exports = function (RED) {
 
             connected = false;
             node._plc = new Controller();
-            node._plc.removeAllListeners("close");
+            node._plc.removeListener("close", node._plc._handleCloseEvent);
             node._plc.on("close", onControllerClose);
             node._plc.on("error", onControllerError);
             node._plc.on("end", onControllerEnd);
