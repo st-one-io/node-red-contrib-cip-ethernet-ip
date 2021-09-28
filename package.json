@@ -4,7 +4,7 @@
     "description": "A Node-RED node to interact with Allen Bradley / Rockwell PLCs using the EtherNet/IP Protocol",
     "main": "index.js",
     "dependencies": {
-        "ethernet-ip": "^1.2.5"
+        "st-ethernet-ip": "^2.4.3"
     },
     "repository": {
         "type": "git",

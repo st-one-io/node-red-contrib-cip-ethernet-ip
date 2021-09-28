@@ -18,19 +18,15 @@ function nrInputShim(node, fn) {
 module.exports = function (RED) {
     "use strict";
 
-    const eip = require('ethernet-ip');
-    const {
-        Controller,
-        Tag
-    } = eip;
-    const {
-        EventEmitter
-    } = require('events');
+    const eip = require('st-ethernet-ip');
+    const { Controller, Tag, TagGroup, Structure, TagList } = eip;
+    const { Types } = eip.EthernetIP.CIP.DataTypes;
+    const { EventEmitter } = require('events');
 
     // ---------- Ethernet-IP Endpoint ----------
 
     function generateStatus(status, val) {
-        var obj;
+        let obj;
 
         if (typeof val != 'string' && typeof val != 'number' && typeof val != 'boolean') {
             val = RED._("ethip.endpoint.status.online");
@@ -84,13 +80,22 @@ module.exports = function (RED) {
 
     function EthIpEndpoint(config) {
         EventEmitter.call(this);
-        var node = this;
-        var status;
-        var isVerbose = RED.settings.get('verbose');
-        var connectTimeoutTimer;
-        var connected = false;
-        var closing = false;
-        var tags = new Map();
+        const node = this;
+        const isVerbose = RED.settings.get('verbose');
+        /** @type {Map<string,eip.Structure>} */
+        const tags = new Map();
+        const tagGroup = new TagGroup();
+
+        /** @type {eip.Controller} */
+        let plc;
+        let status;
+        let connectTimeoutTimer;
+        let cycleTimer;
+        let cycleInProgress = 0;
+        let tagChanged = false;
+        let needsWrite = false;
+        let connected = false;
+        let closing = false;
 
         RED.nodes.createNode(this, config);
 
@@ -99,17 +104,17 @@ module.exports = function (RED) {
 
         //Create tags
         config.vartable = config.vartable || {};
-        for (let prog of Object.keys(config.vartable)) {
+        for (const prog of Object.keys(config.vartable)) {
 
-            for (let varname of Object.keys(config.vartable[prog])) {
+            for (const varname of Object.keys(config.vartable[prog])) {
                 if(!varname){
                     //skip empty values
                     continue;
                 }
 
-                let obj = config.vartable[prog][varname];
-                let type = (obj.type || '').toString().toUpperCase();
-                let dt = eip.EthernetIP.CIP.DataTypes.Types[type] || null;
+                const obj = config.vartable[prog][varname];
+                const type = (obj.type || '').toString().toUpperCase();
+                const dt = Types[type] || null;
 
                 if (isVerbose) {
                     node.log(RED._("ethip.info.tagregister") + `: Name:[${varname}], Prog:[${prog}], Type:[${dt}](${type})`);
@@ -120,99 +125,125 @@ module.exports = function (RED) {
                     continue;
                 }
                 
-                let tag = new Tag(varname, prog || null, dt);
+                const tag = new Structure(varname, null, prog || null, dt);
                 
                 tag.on('Initialized', onTagChanged);
                 tag.on('Changed', onTagChanged);
                 
                 tags.set(`${prog}:${varname}`, tag);
+                tagGroup.add(tag);
             }
         }
 
-        node.getStatus = function getStatus() {
-            return status;
-        };
-
-        node.getTag = function getTag(t) {
-            return tags.get(t);
-        };
-
-        node.getTags = function getTags(t) {
-            return tags;
-        };
-
-        node.getAllTagValues = function getAllTagValues() {
+        node.getStatus = () => status;
+        node.getTag = t => tags.get(t);
+        node.getTags = () => tags;
+        node.getAllTagValues = () => {
             let res = {};
 
-            node._plc.forEach(tag => {
+            tagGroup.forEach(tag => {
                 res[tag.name] = tag.controller_value;
             });
 
             return res;
         };
 
+        node.setNeedsWrite = () => needsWrite = true;
+
         function manageStatus(newStatus) {
             if (status == newStatus) return;
 
             status = newStatus;
-            node.emit('__STATUS__', {
+            node.emit('#__STATUS__', {
                 status: status
             });
         }
 
         function onTagChanged(tag, lastValue) {
-            node.emit('__ALL_CHANGED__', tag, lastValue);
+            node.emit('#__CHANGED__', tag, lastValue);
+            tagChanged = true;
         }
 
-        function onConnect() {
+        function testTagChanged() {
+            if (tagChanged) node.emit('#__ALL_CHANGED__');
+            tagChanged = false;
+        }
+
+        async function doCycle() {
+            if (cycleInProgress) {
+                cycleInProgress++;
+                if (cycleInProgress > 10) {
+                    //TODO restart communication;
+                }
+                return;
+            } 
+
+            try {
+                cycleInProgress = 1;
+
+                if (needsWrite) {
+                    await plc.writeTagGroup(tagGroup);
+                    needsWrite = false;
+                }
+
+                await plc.readTagGroup(tagGroup);
+                testTagChanged();
+
+                cycleInProgress = 0;
+            } catch (e) {
+                if (!closing) {
+                    onControllerError(e);
+                }
+            }
+        }
+
+        async function onConnect() {
             clearTimeout(connectTimeoutTimer);
             manageStatus('online');
 
             connected = true;
+            cycleInProgress = 0;
 
-            for (let t of tags.values()) {
-                node._plc.subscribe(t);
+            try {
+                const taglist = new TagList();
+                await plc.getControllerTagList(taglist);
+                
+                tags.forEach(t => t.updateTaglist(taglist));
+            } catch (e) {
+                console.log(e);
+                node.warn(RED._('ethip.warn.notaglist'));
             }
 
-            node._plc.scan_rate = parseInt(config.cycletime) || 500;
-            node._plc.scan().catch(onScanError);
+            cycleTimer = setInterval(doCycle, parseInt(config.cycletime) || 500);
         }
 
         function onConnectError(err) {
             let errStr = err instanceof Error ? err.toString() : JSON.stringify(err);
             node.error(RED._("ethip.error.onconnect") + errStr, {});
-            onControllerEnd();
+            onControllerClose();
         }
 
         function onControllerError(err) {
             let errStr = err instanceof Error ? err.toString() : JSON.stringify(err);
             node.error(RED._("ethip.error.onerror") + errStr, {});
-            onControllerEnd();
+            onControllerClose();
         }
 
-        function onScanError(err) {
-            if (closing) {
-                //closing the connection will cause a timeout error, so let's just skip it
-                return;
-            }
-
-            //proceed to cleanup and reconnect
-            onControllerError(err);
-        }
-
-        function onControllerEnd() {
+        function onControllerClose() {
             clearTimeout(connectTimeoutTimer);
+            clearInterval(cycleTimer);
             manageStatus('offline');
 
             connected = false;
 
             // don't restart if we're closing...
             if(closing) {
-                destroyPLC();
                 return;
-            } else {
-                //reset tag values, in case we're dropping the connection because of a wrong value
-                node._plc.forEach((tag) => {
+            }
+            
+            //reset tag values, in case we're dropping the connection because of a wrong value
+            if (plc) {
+                plc.forEach((tag) => {
                     tag.value = null;
                 });
             }
@@ -221,21 +252,28 @@ module.exports = function (RED) {
             connectTimeoutTimer = setTimeout(connect, 5000);
         }
 
-        function destroyPLC() {
-            if (node._plc) {
-                node._plc.destroy();
+        async function destroyPLC() {
+            if (plc) {
+                // sets "plc" to null before async code, prevents race conditions
+                const localPlc = plc;
+                plc = null;
+
+                try {
+                    await localPlc.disconnect();
+                } catch (e) {
+                    //TODO emit warning
+                    net.Socket.prototype.destroy.call(localPlc);
+                }
                 
-                //TODO remove listeners
-                node._plc.removeListener("error", onControllerError);
-                node._plc.removeListener("end", onControllerEnd);
-                net.Socket.prototype.destroy.call(node._plc);
-                node._plc = null;
+                localPlc.removeListener("error", onControllerError);
+                localPlc.removeListener("end", onControllerClose);
             }
         }
 
         function closeConnection(done) {
             //ensure we won't try to connect again if anybody wants to close it
             clearTimeout(connectTimeoutTimer);
+            clearInterval(cycleTimer);
 
             if (isVerbose) {
                 node.log(RED._("ethip.info.disconnect"));
@@ -244,11 +282,12 @@ module.exports = function (RED) {
             manageStatus('offline');
             connected = false;
 
-            destroyPLC();
+            destroyPLC().then(() => {
+                if (typeof done == 'function') {
+                    done();
+                }
+            });
 
-            if (typeof done == 'function') {
-                done();
-            }
         }
 
         // close the connection and remove tag listeners
@@ -270,7 +309,7 @@ module.exports = function (RED) {
             // don't restart if we're closing...
             if(closing) return;
 
-            if (node._plc) {
+            if (plc) {
                 closeConnection();
             }
 
@@ -281,10 +320,11 @@ module.exports = function (RED) {
             }
 
             connected = false;
-            node._plc = new Controller();
-            node._plc.on("error", onControllerError);
-            node._plc.on("end", onControllerEnd);
-            node._plc.connect(config.address, Number(config.slot) || 0).then(onConnect).catch(onConnectError);
+            plc = new Controller(false, { unconnectedSendTimeout: 5064 });
+            plc.autoBrowseTags = false;
+            plc.on("error", onControllerError);
+            plc.on("close", onControllerClose);
+            plc.connect(config.address, Number(config.slot) || 0).then(onConnect).catch(onConnectError);
         }
 
         node.on('close', onNodeClose);
@@ -345,19 +385,19 @@ module.exports = function (RED) {
             tag.on('Initialized', onChanged);
             tag.on('Changed', onChanged);
         } else if (config.mode === 'all-split') {
-            node.endpoint.on('__ALL_CHANGED__', onChanged);
+            node.endpoint.on('#__CHANGED__', onChanged);
         } else {
-            node.endpoint.on('__ALL_CHANGED__', onChangedAllValues);
+            node.endpoint.on('#__ALL_CHANGED__', onChangedAllValues);
         }
 
         node.status(generateStatus("connecting", ""));
 
-        node.endpoint.on('__STATUS__', onEndpointStatus);
+        node.endpoint.on('#__STATUS__', onEndpointStatus);
 
         node.on('close', function (done) {
-            node.endpoint.removeListener('__ALL_CHANGED__', onChanged);
-            node.endpoint.removeListener('__ALL_CHANGED__', onChangedAllValues);
-            node.endpoint.removeListener('__STATUS__', onEndpointStatus);
+            node.endpoint.removeListener('#__ALL_CHANGED__', onChanged);
+            node.endpoint.removeListener('#__ALL_CHANGED__', onChangedAllValues);
+            node.endpoint.removeListener('#__STATUS__', onEndpointStatus);
             if (tag) {
                 tag.removeListener('Initialized', onChanged);
                 tag.removeListener('Changed', onChanged);
@@ -370,8 +410,8 @@ module.exports = function (RED) {
     // ---------- Ethernet-IP Out ----------
 
     function EthIpOut(config) {
-        var node = this;
-        var statusVal, tag;
+        const node = this;
+        let statusVal, tag;
         RED.nodes.createNode(this, config);
 
         node.endpoint = RED.nodes.getNode(config.endpoint);
@@ -387,6 +427,7 @@ module.exports = function (RED) {
             //the actual write will be performed by the scan cycle
             //of the Controller on the endpoint
             tag.value = statusVal = msg.payload;
+            node.endpoint.setNeedsWrite();
             // we currently have no feedback of the written value, so
             // let's just call done() here
             done();
@@ -407,10 +448,10 @@ module.exports = function (RED) {
         node.status(generateStatus("connecting", ""));
 
         nrInputShim(node, onNewMsg);
-        node.endpoint.on('__STATUS__', onEndpointStatus);
+        node.endpoint.on('#__STATUS__', onEndpointStatus);
 
         node.on('close', function (done) {
-            node.endpoint.removeListener('__STATUS__', onEndpointStatus);
+            node.endpoint.removeListener('#__STATUS__', onEndpointStatus);
             done();
         });
 
