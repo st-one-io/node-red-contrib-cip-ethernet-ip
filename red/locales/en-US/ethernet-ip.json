@@ -34,6 +34,7 @@
                 "address": "IP Address",
                 "slot": "Slot",
                 "cycletime": "Cycle time",
+                "timeout": "Timeout",
                 "tabs": {
                     "connection": "Connection",
                     "variables": "Tags"
@@ -79,7 +80,8 @@
             "tagregister": "Registering tag"
         },
         "warn": {
-            "invalidtagname": "Skipping tag with invalid name '__name__'"
+            "invalidtagname": "Skipping tag with invalid name '__name__'",
+            "notaglist": "Cannot read PLC data types. Only basic types supported"
         },
         "addrval": {
             "MULTCOMMA": "Invalid address with multiple commas",

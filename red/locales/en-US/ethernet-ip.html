@@ -1,0 +1,75 @@
+<!--
+  Copyright: (c) 2016-2020, ST-One Ltda., Guilherme Francescon Cittolin <guilherme@st-one.io>
+  GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
+-->
+
+<script type="text/html" data-help-name="eth-ip endpoint">
+	<p>Represents a PLC connection</p>
+	<p>This node was created as part of the <a href="https://st-one.io" target="_blank">ST-One</a> project</p>
+</script>
+
+<script type="text/html" data-help-name="eth-ip in">
+	<p>Reads data from a PLC</p>
+	<p>This node was created as part of the <a href="https://st-one.io" target="_blank">ST-One</a> project</p>
+
+	<h3>Outputs</h3>
+	<dl class="message-properties">
+		<dt>payload <span class="property-type">any</span></dt>
+		<dd>
+			The value(s) as read from the PLC
+		</dd>
+
+		<dt>topic<span class="property-type">string</span></dt>
+		<dd>
+			The name of the variable, when the message refers to a single variable
+			(that is, when mode is "Single Variable" or "All variables, one per
+			message")
+		</dd>
+	</dl>
+
+	<h3>Details</h3>
+	<p>
+		All data is read cyclically from the PLC as configured in the <i>ethip endpoint</i>, 
+		but there are three modes of making it available in a flow:</p>
+	<ul>
+		<li>
+			<b>Single tag:</b> A single tag can be selected from the configured tags, and a 
+			message is sent every time it changes. <code>msg.payload</code> contains the tag's 
+			value and <code>msg.topic</code> has the tag's name.
+		</li>
+		<li>
+			<b>All tags, one per message:</b> Like the <i>Single tag</i> mode, but for all 
+			tags configured.
+		</li>
+		<li>
+			<b>All tags:</b> In this mode, <code>msg.payload</code> contains an object with 
+			all configured tags and their values. A message is sent if at least one of the 
+			variables changes its value.
+		</li>
+	</ul>
+</script>
+
+<script type="text/html" data-help-name="eth-ip out">
+	<p>Writes <code>msg.payload</code> to a selected PLC tag</p>
+	<p>This node was created as part of the <a href="https://st-one.io" target="_blank">ST-One</a> project</p>
+
+	<p class="form-tips">
+		<b>Caution when writing data to production PLCs!</b><br/>
+		Fully test everything you do. The authors cannot be liable for any
+		damage or injury caused by the use of this node
+	</p>
+
+	<h3>Inputs</h3>
+	<dl class="message-properties">
+		<dt>payload<span class="property-type">any</span></dt>
+		<dd>
+			the data to be written. It will be casted to the required data type
+			whenever possible.
+		</dd>
+
+		<dt>variable<span class="property-type">string</span></dt>
+		<dd>
+			The variable to be written, if not defined in the configuration node.
+		</dd>
+	</dl>
+</script>
