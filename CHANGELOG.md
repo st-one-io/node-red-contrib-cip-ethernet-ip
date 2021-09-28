@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.1.3
+  - Prevents PLC connection issues to crash Node-RED (#26) (thanks @nateevans)
+
 ## Version 1.1.2
  - Fixes UI on Node-RED 1.0
  - Update licensing information and branding
