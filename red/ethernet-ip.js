@@ -221,11 +221,20 @@ module.exports = function (RED) {
             connectTimeoutTimer = setTimeout(connect, 5000);
         }
 
+        function onControllerClose(err) {
+            try {
+                node._plc._handleCloseEvent(err);
+            } catch (e) {
+                node.error(`${RED._("ethip.error.onerror")} ${e.message}`, {});
+            }
+        }
+
         function destroyPLC() {
             if (node._plc) {
                 node._plc.destroy();
                 
                 //TODO remove listeners
+                node._plc.removeListener("close", onControllerClose);
                 node._plc.removeListener("error", onControllerError);
                 node._plc.removeListener("end", onControllerEnd);
                 net.Socket.prototype.destroy.call(node._plc);
@@ -282,6 +291,8 @@ module.exports = function (RED) {
 
             connected = false;
             node._plc = new Controller();
+            node._plc.removeListener("close", node._plc._handleCloseEvent);
+            node._plc.on("close", onControllerClose);
             node._plc.on("error", onControllerError);
             node._plc.on("end", onControllerEnd);
             node._plc.connect(config.address, Number(config.slot) || 0).then(onConnect).catch(onConnectError);
