@@ -60,6 +60,10 @@
 				<input type="text" id="node-config-input-cycletime" data-i18n="[placeholder]ethip.endpoint.label.cycletime" style="width: 60px;"> <span>ms</span>
 			</div>
 			<div class="form-row">
+				<label for="node-config-input-timeout"><i class="fa fa-refresh"></i> <span data-i18n="ethip.endpoint.label.timeout"></span></label>
+				<input type="text" id="node-config-input-timeout" data-i18n="[placeholder]ethip.endpoint.label.timeout" style="width: 60px;"> <span>ms</span>
+			</div>
+			<div class="form-row">
 				<label for="node-config-input-name"><i class="fa fa-tag"></i> <span data-i18n="ethip.label.name"></span></label>
 				<input type="text" id="node-config-input-name" data-i18n="[placeholder]ethip.label.name">
 			</div>
@@ -135,7 +139,10 @@
 				validate: RED.validators.number()
 			},
 			cycletime: {
-				value: 500
+				value: 3000
+			},
+			timeout: {
+				value: 10000
 			},
 			name: {
 				value: ""
@@ -393,6 +400,15 @@
 			$("#node-config-input-cycletime").spinner({
 				min: 50
 			});
+
+			$("#node-config-input-timeout").spinner({
+				min: 1000
+			});
+
+			if (self.timeout === undefined) {
+				self.timeout = 10000;
+				$("#node-config-input-timeout").val(10000);
+			}
 		},
 		oneditsave: function() {
 			var node = this;
@@ -612,7 +628,7 @@
 			},
 			variable: {
 				value: "",
-				required: true
+				validate: function(value) { this.program ? this.value : true }
 			},
 			program: {
 				value: ""
@@ -687,6 +703,12 @@
 
 			function updateVarList(progName) {
 				cleanupLists(false);
+				if (progList.val() == "") {
+					varList.append($('<option/>', {
+						value: "",
+						text: ""
+					}));
+				}
 
 				if(!vars[progName]) return;
 

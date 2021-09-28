@@ -34,6 +34,7 @@
                 "address": "IP Address",
                 "slot": "Slot",
                 "cycletime": "Cycle time",
+                "timeout": "Timeout",
                 "tabs": {
                     "connection": "Connection",
                     "variables": "Tags"

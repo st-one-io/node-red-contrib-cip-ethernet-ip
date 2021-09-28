@@ -82,20 +82,21 @@ module.exports = function (RED) {
         EventEmitter.call(this);
         const node = this;
         const isVerbose = RED.settings.get('verbose');
-        /** @type {Map<string,eip.Structure>} */
+        /** @type {Map<string,eip.Structure|eip.Tag>} */
         const tags = new Map();
-        const tagGroup = new TagGroup();
+        const taglist = new TagList();
 
         /** @type {eip.Controller} */
         let plc;
         let status;
-        let connectTimeoutTimer;
+        let reconnectTimer;
         let cycleTimer;
         let cycleInProgress = 0;
         let tagChanged = false;
-        let needsWrite = false;
+        let needsWrite = [];
         let connected = false;
         let closing = false;
+        let tagGroup;
 
         RED.nodes.createNode(this, config);
 
@@ -104,35 +105,50 @@ module.exports = function (RED) {
 
         //Create tags
         config.vartable = config.vartable || {};
-        for (const prog of Object.keys(config.vartable)) {
+        const timeout = parseInt(config.timeout) || 10000;
 
-            for (const varname of Object.keys(config.vartable[prog])) {
-                if(!varname){
-                    //skip empty values
-                    continue;
+        function createTags() {
+            const group = new TagGroup();
+
+            if (plc) {
+                tags.clear();
+
+                for (const prog of Object.keys(config.vartable)) {
+
+                    for (const varname of Object.keys(config.vartable[prog])) {
+                        if (!varname) {
+                            //skip empty values
+                            continue;
+                        }
+
+                        const obj = config.vartable[prog][varname];
+                        const type = (obj.type || '').toString().toUpperCase();
+                        const dt = Types[type] || null;
+
+                        if (isVerbose) {
+                            node.log(RED._("ethip.info.tagregister") + `: Name:[${varname}], Prog:[${prog}], Type:[${dt}](${type})`);
+                        }
+
+                        if (!Tag.isValidTagname(varname)) {
+                            node.warn(RED._("ethip.warn.invalidtagname", { name: varname }));
+                            continue;
+                        }
+
+                        const tagName = prog ? `Program:${prog}.${varname}` : varname;
+                        const tag = plc.newTag(varname, prog || null, false);
+
+                        tag.on('Initialized', onTagChanged);
+                        tag.on('Changed', onTagChanged);
+
+                        tags.set(tagName, tag);
+                        group.add(tag);
+                    }
                 }
 
-                const obj = config.vartable[prog][varname];
-                const type = (obj.type || '').toString().toUpperCase();
-                const dt = Types[type] || null;
-
-                if (isVerbose) {
-                    node.log(RED._("ethip.info.tagregister") + `: Name:[${varname}], Prog:[${prog}], Type:[${dt}](${type})`);
-                }
-
-                if (!Tag.isValidTagname(varname)){
-                    node.warn(RED._("ethip.warn.invalidtagname", {name: varname}));
-                    continue;
-                }
-                
-                const tag = new Structure(varname, null, prog || null, dt);
-                
-                tag.on('Initialized', onTagChanged);
-                tag.on('Changed', onTagChanged);
-                
-                tags.set(`${prog}:${varname}`, tag);
-                tagGroup.add(tag);
+                node.emit('#__NEW_TAGS__');
             }
+
+            return group;
         }
 
         node.getStatus = () => status;
@@ -141,14 +157,20 @@ module.exports = function (RED) {
         node.getAllTagValues = () => {
             let res = {};
 
-            tagGroup.forEach(tag => {
-                res[tag.name] = tag.controller_value;
-            });
+            if (tagGroup) {
+                tagGroup.forEach(tag => {
+                    res[tag.name] = tag.controller_value;
+                });
+            }
 
             return res;
         };
 
-        node.setNeedsWrite = () => needsWrite = true;
+        /**
+         * Adds callback functions of write nodes
+         * @param {function} f 
+         */
+        node.setNeedsWrite = f => needsWrite.push(f);
 
         function manageStatus(newStatus) {
             if (status == newStatus) return;
@@ -176,14 +198,15 @@ module.exports = function (RED) {
                     //TODO restart communication;
                 }
                 return;
-            } 
+            }
 
             try {
                 cycleInProgress = 1;
 
-                if (needsWrite) {
+                if (needsWrite.length) {
                     await plc.writeTagGroup(tagGroup);
-                    needsWrite = false;
+                    needsWrite.forEach(f => f());
+                    needsWrite = [];
                 }
 
                 await plc.readTagGroup(tagGroup);
@@ -198,23 +221,15 @@ module.exports = function (RED) {
         }
 
         async function onConnect() {
-            clearTimeout(connectTimeoutTimer);
-            manageStatus('online');
+            clearTimeout(reconnectTimer);
+
+            tagGroup = createTags();
 
             connected = true;
             cycleInProgress = 0;
+            manageStatus('online');
 
-            try {
-                const taglist = new TagList();
-                await plc.getControllerTagList(taglist);
-                
-                tags.forEach(t => t.updateTaglist(taglist));
-            } catch (e) {
-                console.log(e);
-                node.warn(RED._('ethip.warn.notaglist'));
-            }
-
-            cycleTimer = setInterval(doCycle, parseInt(config.cycletime) || 500);
+            cycleTimer = setInterval(doCycle, parseInt(config.cycletime) || 3000);
         }
 
         function onConnectError(err) {
@@ -230,17 +245,17 @@ module.exports = function (RED) {
         }
 
         function onControllerClose() {
-            clearTimeout(connectTimeoutTimer);
+            clearTimeout(reconnectTimer);
             clearInterval(cycleTimer);
             manageStatus('offline');
 
             connected = false;
 
             // don't restart if we're closing...
-            if(closing) {
+            if (closing) {
                 return;
             }
-            
+
             //reset tag values, in case we're dropping the connection because of a wrong value
             if (plc) {
                 plc.forEach((tag) => {
@@ -249,7 +264,7 @@ module.exports = function (RED) {
             }
 
             //try to reconnect if failed to connect
-            connectTimeoutTimer = setTimeout(connect, 5000);
+            reconnectTimer = setTimeout(connect, 5000);
         }
 
         async function destroyPLC() {
@@ -264,7 +279,7 @@ module.exports = function (RED) {
                     //TODO emit warning
                     net.Socket.prototype.destroy.call(localPlc);
                 }
-                
+
                 localPlc.removeListener("error", onControllerError);
                 localPlc.removeListener("end", onControllerClose);
             }
@@ -272,7 +287,7 @@ module.exports = function (RED) {
 
         function closeConnection(done) {
             //ensure we won't try to connect again if anybody wants to close it
-            clearTimeout(connectTimeoutTimer);
+            clearTimeout(reconnectTimer);
             clearInterval(cycleTimer);
 
             if (isVerbose) {
@@ -304,10 +319,10 @@ module.exports = function (RED) {
 
         function connect() {
             //ensure we won't try to connect again if anybody wants to close it
-            clearTimeout(connectTimeoutTimer);
+            clearTimeout(reconnectTimer);
 
             // don't restart if we're closing...
-            if(closing) return;
+            if (closing) return;
 
             if (plc) {
                 closeConnection();
@@ -321,7 +336,7 @@ module.exports = function (RED) {
 
             connected = false;
             plc = new Controller(false, { unconnectedSendTimeout: 5064 });
-            plc.autoBrowseTags = false;
+            plc.timeout_sp = timeout;
             plc.on("error", onControllerError);
             plc.on("close", onControllerClose);
             plc.connect(config.address, Number(config.slot) || 0).then(onConnect).catch(onConnectError);
@@ -344,6 +359,8 @@ module.exports = function (RED) {
         if (!node.endpoint) {
             return node.error(RED._("ethip.error.missingconfig"));
         }
+
+        const tagName = config.program ? `Program:${config.program}.${config.variable}` : config.variable;
 
         function onChanged(tag, lastValue) {
             let data = tag.controller_value;
@@ -371,37 +388,45 @@ module.exports = function (RED) {
             node.status(generateStatus(s.status, config.mode === 'single' ? statusVal : null));
         }
 
-        if (config.mode === 'single') {
-            let tagName = `${config.program}:${config.variable}`;
+        function loadTag() {
+            unloadTag();
+
             tag = node.endpoint.getTag(tagName);
 
             if (!tag) {
                 //shouldn't reach here. But just in case..
-                return node.error(RED._("ethip.error.invalidvar", {
-                    varname: tagName
-                }));
+                return node.error(RED._("ethip.error.invalidvar", { varname: tagName }));
             }
 
             tag.on('Initialized', onChanged);
             tag.on('Changed', onChanged);
+        }
+
+        function unloadTag() {
+            if (tag) {
+                tag.removeListener('Initialized', onChanged);
+                tag.removeListener('Changed', onChanged);
+            }
+        }
+
+        node.status(generateStatus(node.endpoint.getStatus(), ""));
+
+        node.endpoint.on('#__STATUS__', onEndpointStatus);
+
+        if (config.mode === 'single') {
+            node.endpoint.on('#__NEW_TAGS__', loadTag);
         } else if (config.mode === 'all-split') {
             node.endpoint.on('#__CHANGED__', onChanged);
         } else {
             node.endpoint.on('#__ALL_CHANGED__', onChangedAllValues);
         }
 
-        node.status(generateStatus("connecting", ""));
-
-        node.endpoint.on('#__STATUS__', onEndpointStatus);
-
         node.on('close', function (done) {
             node.endpoint.removeListener('#__ALL_CHANGED__', onChanged);
             node.endpoint.removeListener('#__ALL_CHANGED__', onChangedAllValues);
             node.endpoint.removeListener('#__STATUS__', onEndpointStatus);
-            if (tag) {
-                tag.removeListener('Initialized', onChanged);
-                tag.removeListener('Changed', onChanged);
-            }
+            node.endpoint.removeListener('#__NEW_TAGS__', loadTag);
+            unloadTag();
             done();
         });
     }
@@ -419,33 +444,32 @@ module.exports = function (RED) {
             return node.error(RED._("ethip.in.error.missingconfig"));
         }
 
+        const configTagName = config.variable ? (
+            config.program ? `Program:${config.program}.${config.variable}` : config.variable
+        ) : null;
+
         function onEndpointStatus(s) {
             node.status(generateStatus(s.status, statusVal));
         }
 
         function onNewMsg(msg, send, done) {
-            //the actual write will be performed by the scan cycle
-            //of the Controller on the endpoint
-            tag.value = statusVal = msg.payload;
-            node.endpoint.setNeedsWrite();
-            // we currently have no feedback of the written value, so
-            // let's just call done() here
-            done();
+
+            const tagName = configTagName || msg.variable;
+            const tag = node.endpoint.getTag(tagName);
+            if (!tag) {
+                const err = RED._("ethip.error.invalidvar", { varname: tagName });
+                done(err);
+            } else {
+                //the actual write will be performed by the scan cycle
+                //of the Controller on the endpoint
+                tag.value = statusVal = msg.payload;
+                node.endpoint.setNeedsWrite(done);
+            }
 
             node.status(generateStatus(node.endpoint.getStatus(), statusVal));
         }
 
-        let tagName = `${config.program}:${config.variable}`;
-        tag = node.endpoint.getTag(tagName);
-
-        if (!tag) {
-            //shouldn't reach here. But just in case..
-            return node.error(RED._("ethip.error.invalidvar", {
-                varname: tagName
-            }));
-        }
-
-        node.status(generateStatus("connecting", ""));
+        node.status(generateStatus(node.endpoint.getStatus(), ""));
 
         nrInputShim(node, onNewMsg);
         node.endpoint.on('#__STATUS__', onEndpointStatus);
