@@ -454,7 +454,8 @@ module.exports = function (RED) {
 
         function onNewMsg(msg, send, done) {
 
-            const tagName = configTagName || msg.variable;
+            // const tagName = configTagName || msg.variable;
+            const tagName =  (msg.variable ? msg.variable : configTagName);
             const tag = node.endpoint.getTag(tagName);
             if (!tag) {
                 const err = RED._("ethip.error.invalidvar", { varname: tagName });
