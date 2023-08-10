@@ -181,7 +181,7 @@ module.exports = function (RED) {
             });
         }
 
-        function onTagChanged(tag, lastValue) {
+        function onTagChanged(tag, lastValue = null) {
             node.emit('#__CHANGED__', tag, lastValue);
             tagChanged = true;
             node.emit('#__ALL_CHANGED__');
@@ -263,7 +263,8 @@ module.exports = function (RED) {
             let msg = {
                 payload: data,
                 topic: key,
-                lastValue: lastValue
+                lastValue: lastValue,
+		timestamp: tag.timestamp_raw.getTime()
             };
 
             node.send(msg);
