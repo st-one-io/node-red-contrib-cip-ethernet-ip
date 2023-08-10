@@ -35,6 +35,7 @@
                 "slot": "Slot",
                 "cycletime": "Cycle time",
                 "timeout": "Timeout",
+                "connectedMess": "Connected Messaging",
                 "tabs": {
                     "connection": "Connection",
                     "variables": "Tags"
@@ -48,6 +49,7 @@
                     "addr": "Address",
                     "program": "Scope",
                     "tag": "Tag",
+                    "connectedMess": "Connected Messaging",
                     "export": "Export",
                     "import": "Import",
                     "global": "<Global>"

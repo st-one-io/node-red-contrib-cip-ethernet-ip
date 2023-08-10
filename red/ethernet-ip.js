@@ -1,4 +1,3 @@
-//@ts-check
 /*
   Copyright: (c) 2016-2020, St-One Ltda., Guilherme Francescon Cittolin <guilherme@st-one.io>
   GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
@@ -19,15 +18,19 @@ module.exports = function (RED) {
     "use strict";
 
     const eip = require('st-ethernet-ip');
-    const { Controller, Tag, TagGroup, Structure, TagList } = eip;
+    const { Controller, Tag, TagGroup, Structure, TagList, Browser, ControllerManager} = eip;
     const { Types } = eip.EthernetIP.CIP.DataTypes;
     const { EventEmitter } = require('events');
+
+    // ---------- Ethernet-IP Browser ----------
+
+    const browser = new Browser();
 
     // ---------- Ethernet-IP Endpoint ----------
 
     function generateStatus(status, val) {
         let obj;
-
+        
         if (typeof val != 'string' && typeof val != 'number' && typeof val != 'boolean') {
             val = RED._("ethip.endpoint.status.online");
         }
@@ -87,6 +90,7 @@ module.exports = function (RED) {
         const taglist = new TagList();
 
         /** @type {eip.Controller} */
+        let plcManager;
         let plc;
         let status;
         let reconnectTimer;
@@ -108,10 +112,8 @@ module.exports = function (RED) {
         const timeout = parseInt(config.timeout) || 10000;
 
         function createTags() {
-            const group = new TagGroup();
-
             if (plc) {
-                tags.clear();
+                
 
                 for (const prog of Object.keys(config.vartable)) {
 
@@ -135,20 +137,17 @@ module.exports = function (RED) {
                         }
 
                         const tagName = prog ? `Program:${prog}.${varname}` : varname;
-                        const tag = plc.newTag(varname, prog || null, false);
+                        const tag = plc.addTag(varname, prog || null);
 
                         tag.on('Initialized', onTagChanged);
                         tag.on('Changed', onTagChanged);
 
                         tags.set(tagName, tag);
-                        group.add(tag);
                     }
                 }
 
                 node.emit('#__NEW_TAGS__');
             }
-
-            return group;
         }
 
         node.getStatus = () => status;
@@ -157,10 +156,10 @@ module.exports = function (RED) {
         node.getAllTagValues = () => {
             let res = {};
 
-            if (tagGroup) {
-                tagGroup.forEach(tag => {
-                    res[tag.name] = tag.controller_value;
-                });
+            if (plc.PLC) {
+            plc.PLC.forEach(tag => {
+                res[tag.name] = tag.value;
+            });
             }
 
             return res;
@@ -176,6 +175,7 @@ module.exports = function (RED) {
             if (status == newStatus) return;
 
             status = newStatus;
+            
             node.emit('#__STATUS__', {
                 status: status
             });
@@ -184,162 +184,57 @@ module.exports = function (RED) {
         function onTagChanged(tag, lastValue) {
             node.emit('#__CHANGED__', tag, lastValue);
             tagChanged = true;
-        }
-
-        function testTagChanged() {
-            if (tagChanged) node.emit('#__ALL_CHANGED__');
-            tagChanged = false;
-        }
-
-        async function doCycle() {
-            if (cycleInProgress) {
-                cycleInProgress++;
-                if (cycleInProgress > 10) {
-                    //TODO restart communication;
-                }
-                return;
-            }
-
-            try {
-                cycleInProgress = 1;
-
-                if (needsWrite.length) {
-                    await plc.writeTagGroup(tagGroup);
-                    needsWrite.forEach(f => f());
-                    needsWrite = [];
-                }
-
-                await plc.readTagGroup(tagGroup);
-                testTagChanged();
-
-                cycleInProgress = 0;
-            } catch (e) {
-                if (!closing) {
-                    onControllerError(e);
-                }
-            }
+            node.emit('#__ALL_CHANGED__');
+            tagChanged = false;   
         }
 
         async function onConnect() {
-            clearTimeout(reconnectTimer);
-
-            tagGroup = createTags();
-
+            createTags();
             connected = true;
-            cycleInProgress = 0;
             manageStatus('online');
-
-            cycleTimer = setInterval(doCycle, parseInt(config.cycletime) || 3000);
+            
+           
         }
 
-        function onConnectError(err) {
-            let errStr = err instanceof Error ? err.toString() : JSON.stringify(err);
-            node.error(RED._("ethip.error.onconnect") + errStr, {});
-            onControllerClose();
-        }
 
         function onControllerError(err) {
+            manageStatus('offline');
             let errStr = err instanceof Error ? err.toString() : JSON.stringify(err);
             node.error(RED._("ethip.error.onerror") + errStr, {});
-            onControllerClose();
         }
 
-        function onControllerClose() {
-            clearTimeout(reconnectTimer);
-            clearInterval(cycleTimer);
-            manageStatus('offline');
-
-            connected = false;
-
-            // don't restart if we're closing...
-            if (closing) {
-                return;
-            }
-
-            //reset tag values, in case we're dropping the connection because of a wrong value
-            if (plc) {
-                plc.forEach((tag) => {
-                    tag.value = null;
-                });
-            }
-
-            //try to reconnect if failed to connect
-            reconnectTimer = setTimeout(connect, 5000);
-        }
-
-        async function destroyPLC() {
-            if (plc) {
-                // sets "plc" to null before async code, prevents race conditions
-                const localPlc = plc;
-                plc = null;
-
-                try {
-                    await localPlc.disconnect();
-                } catch (e) {
-                    //TODO emit warning
-                    net.Socket.prototype.destroy.call(localPlc);
-                }
-
-                localPlc.removeListener("error", onControllerError);
-                localPlc.removeListener("end", onControllerClose);
-            }
-        }
-
-        function closeConnection(done) {
-            //ensure we won't try to connect again if anybody wants to close it
-            clearTimeout(reconnectTimer);
-            clearInterval(cycleTimer);
-
-            if (isVerbose) {
-                node.log(RED._("ethip.info.disconnect"));
-            }
-
-            manageStatus('offline');
-            connected = false;
-
-            destroyPLC().then(() => {
-                if (typeof done == 'function') {
-                    done();
-                }
-            });
-
-        }
+        
 
         // close the connection and remove tag listeners
         function onNodeClose(done) {
+            manageStatus('offline');
+            connected = false;
             closing = true;
-            closeConnection(() => {
-                for (let tag of tags.values()) {
-                    tag.removeListener('Initialized', onTagChanged);
-                    tag.removeListener('Changed', onTagChanged);
-                }
-                done();
-            });
+            
+            
+            for (let tag of tags.values()) {
+                tag.removeListener('Initialized', onTagChanged);
+                tag.removeListener('Changed', onTagChanged);
+            }
+            plc.removeListener("Error", onControllerError);
+            plc.removeListener("Connected", onConnect)
+            plc.disconnect().then(done);
         }
 
         function connect() {
-            //ensure we won't try to connect again if anybody wants to close it
-            clearTimeout(reconnectTimer);
-
-            // don't restart if we're closing...
-            if (closing) return;
-
-            if (plc) {
-                closeConnection();
-            }
-
+            connected = false;
+            plcManager = new ControllerManager()
+            plc = plcManager.addController(config.address, Number(config.slot) || 0, parseInt(config.cycletime) || 100, config.connectedMess, 5000, { unconnectedSendTimeout: 5064 })
+            plc.connect()
             manageStatus('connecting');
 
             if (isVerbose) {
                 node.log(RED._("ethip.info.connect") + `: ${config.address} / ${config.slot}`);
             }
 
-            connected = false;
-            plc = new Controller(false, { unconnectedSendTimeout: 5064 });
-            plc.timeout_sp = timeout;
-            plc.on("error", onControllerError);
-            plc.on("close", onControllerClose);
-            plc.connect(config.address, Number(config.slot) || 0).then(onConnect).catch(onConnectError);
+            plc.on("Error", onControllerError);
+            plc.on("Connected", onConnect)
+            
         }
 
         node.on('close', onNodeClose);
@@ -363,7 +258,7 @@ module.exports = function (RED) {
         const tagName = config.program ? `Program:${config.program}.${config.variable}` : config.variable;
 
         function onChanged(tag, lastValue) {
-            let data = tag.controller_value;
+            let data = tag.value;
             let key = tag.name || '';
             let msg = {
                 payload: data,
@@ -395,6 +290,7 @@ module.exports = function (RED) {
 
             if (!tag) {
                 //shouldn't reach here. But just in case..
+                console.log('Ethip In')
                 return node.error(RED._("ethip.error.invalidvar", { varname: tagName }));
             }
 
@@ -481,4 +377,19 @@ module.exports = function (RED) {
 
     }
     RED.nodes.registerType("eth-ip out", EthIpOut);
+
+    // PLC, Tag Browser
+    RED.httpAdmin.get("/eth-ip", RED.auth.needsPermission("eth-ip.read"), function(req,res) {
+        res.json(browser.deviceList)
+    });
+
+    const browsedPLC = new Controller(false);
+    RED.httpAdmin.post("/eth-ip-tag", RED.auth.needsPermission("eth-ip.write"), function(req,res) {
+        browsedPLC.connect(req.body.plcAddress)
+        .then(() => {
+            res.json(browsedPLC.tagList)
+            browsedPLC.disconnect()
+        })
+    }); 
+
 };
