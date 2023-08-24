@@ -1,840 +1,862 @@
 <!--
-  Copyright: (c) 2016-2020, ST-One Ltda., Guilherme Francescon Cittolin <guilherme@st-one.io>
-  GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
+    Copyright: (c) 2016-2020, ST-One Ltda., Guilherme Francescon Cittolin <guilherme@st-one.io>
+    GNU General Public License v3.0+ (see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt)
 -->
 
 <style>
-	.eth-ip-vars-prog-title {
-		/*min-height: 35px;*/
-		background-color: #f3f3f3;
-		padding: 5px;
-	}
-	.eth-ip-vars-prog-handle {
-		padding: 5px;
-		color: #ddd;
-	}
-	.eth-ip-vars-prog-chevron {
-		margin: 3px 5px;
-		width: 10px;
-	}
-	.node-input-variables-container-row, 
-	.node-input-variables-container-row li {
-		padding: 0;
-	}
-	input.eth-ip-vars-var-name {
-		width: 50% !important;
-	}
-	select.eth-ip-vars-var-type {
-		width: 40% !important;
-		margin-left: 5px;
-	}
-	.node-input-variables-container-row .red-ui-editableList-container{
-		padding: 0;
-		min-height: 300px;
-	}
-	.eth-ip-vars-prog-item .red-ui-editableList-container{
-		border-radius: 0;
-		border: none;
-		height: auto !important;
-		min-height: unset;
-	}
-	.eth-ip-vars-var-list {
-		padding: 0 7px;
-	}
-	.plc-list {
-		border:1px solid lightgrey;
-		border-radius: 4px;
-		padding: 5px;
-	}
+.eth-ip-vars-prog-title {
+    /*min-height: 35px;*/
+    background-color: #f3f3f3;
+    padding: 5px;
+}
+    .eth-ip-vars-prog-handle {
+        padding: 5px;
+        color: #ddd;
+    }
+    .eth-ip-vars-prog-chevron {
+        margin: 3px 5px;
+        width: 10px;
+    }
+    .node-input-variables-container-row, 
+    .node-input-variables-container-row li {
+        padding: 0;
+    }
+    input.eth-ip-vars-var-name {
+        width: 40% !important;
+    }
+    select.eth-ip-vars-var-type {
+        width: 20% !important;
+        margin-left: 5px;
+    }
+    input.eth-ip-vars-var-mapping {
+        width: 30% !important;
+        margin-left: 5px;
+    }
+    .node-input-variables-container-row .red-ui-editableList-container {
+        padding: 0;
+        min-height: 300px;
+    }
+    .eth-ip-vars-prog-item .red-ui-editableList-container {
+        border-radius: 0;
+        border: none;
+        height: auto !important;
+        min-height: unset;
+    }
+    .eth-ip-vars-var-list {
+        padding: 0 7px;
+    }
+    .plc-list {
+        border:1px solid lightgrey;
+        border-radius: 4px;
+        padding: 5px;
+    }
 
-	.plc-list-tag {
-		min-height: 300px;
-	}
+    .plc-list-tag {
+        min-height: 300px;
+    }
 
-	.plc-list-item {
-		list-style-type: none;
-	}
+    .plc-list-item {
+        list-style-type: none;
+    }
 
-	.plc-list-item>a {
-		color: blue;
-	}
-	
+    .plc-list-item>a {
+        color: blue;
+    }
+
 </style>
 
 <script type="text/html" data-template-name="eth-ip endpoint">
     <div class="form-row">
-		<ul style="background: #fff; min-width: 600px; margin-bottom: 20px;" id="node-config-ethip-endpoint-tabs"></ul>
-	</div>
-	<div id="node-config-ethip-endpoint-tabs-content" style="min-height: 170px; height: 95%">
-		<div id="ethip-endpoint-tab-connection" style="display:none">
-			<div class="form-row">
-				<label for="node-config-input-address"><i class="fa fa-globe"></i> <span data-i18n="ethip.endpoint.label.address"></span></label>
-				<input class="input-append-left" type="text" id="node-config-input-address" data-i18n="[placeholder]ethip.endpoint.label.address" style="width: 40%;">
-				<label for="node-config-input-slot" style="margin-left: 10px; width: 35px; "> <span data-i18n="ethip.endpoint.label.slot"></span></label>
-				<input type="text" id="node-config-input-slot" data-i18n="[placeholder]ethip.endpoint.label.port" style="width: 50px">
-			</div>
-			<div class="form-row">
-				<label for="node-config-input-cycletime"><i class="fa fa-refresh"></i> <span data-i18n="ethip.endpoint.label.cycletime"></span></label>
-				<input type="text" id="node-config-input-cycletime" data-i18n="[placeholder]ethip.endpoint.label.cycletime" style="width: 60px;"> <span>ms</span>
-			</div>
-			<div class="form-row">
-				<label for="node-config-input-timeout"><i class="fa fa-refresh"></i> <span data-i18n="ethip.endpoint.label.timeout"></span></label>
-				<input type="text" id="node-config-input-timeout" data-i18n="[placeholder]ethip.endpoint.label.timeout" style="width: 60px;"> <span>ms</span>
-			</div>
-			<div class="form-row">
-				<label for="node-config-input-name"><i class="fa fa-tag"></i> <span data-i18n="ethip.label.name"></span></label>
-				<input type="text" id="node-config-input-name" data-i18n="[placeholder]ethip.label.name">
-			</div>
-			<div class="form-row">
-				<label for="node-config-input-connectedMess"><i class="fa fa-exchange"></i> <span data-i18n="ethip.endpoint.label.connectedMess"></span></label>
-				<input type="checkbox" id="node-config-input-connectedMess" style="width: 20px; vertical-align: middle;">
-			</div>
-			<p><b>PLC Browser</b></p>
-			<div class="form-row plc-list">
-				<ul id="node-config-browser-container"></ul>
-			</div>
-		</div>
-		<div id="ethip-endpoint-tab-variables" style="display:none; height: 90%;">
-			<div class="form-row eth-ip-vars-button-group" style="margin-bottom:0; height: 5%">
-				<a href="#" class="editor-button editor-button-small eth-ip-vars-btn-clean" style="margin: 4px; float: right;"><i class="fa fa-trash-o"></i> <span data-i18n="ethip.endpoint.label.variables.clean"></span></a>
-				<a href="#" class="editor-button editor-button-small eth-ip-vars-btn-add-prog" style="margin: 4px; float: right;"><i class="fa fa-plus"></i> <span data-i18n="ethip.endpoint.label.variables.add"></span></a>
-				<a href="#" class="editor-button editor-button-small eth-ip-vars-btn-expand" style="margin: 4px; float: right;"><i class="fa fa-angle-double-down"></i></a>
-				<a href="#" class="editor-button editor-button-small eth-ip-vars-btn-collapse" style="margin: 4px; float: right;"><i class="fa fa-angle-double-up"></i></a>
-				<label><b><span data-i18n="ethip.endpoint.label.variables.list"></b></span></label>
-			</div>
-			<div class="form-row node-input-variables-container-row" style="margin-bottom: 0px; max-height: 100%; overflow-y: auto">
-				<ol id="node-config-input-variables-container" style="min-height: 250px; min-width: 450px;"></ol>
-			</div>
-			<div class="form-row">
-				<a href="#" class="editor-button editor-button-small eth-ip-vars-btn-export" style="margin: 4px; float: right"><i class="fa fa-download"></i> <span data-i18n="ethip.endpoint.label.variables.export"></span></a>
-				<input type="file" id="node-config-ethip-endpoint-var-import" style="display: none"/>
-				<a href="#" class="editor-button editor-button-small eth-ip-vars-btn-import" style="margin: 4px; float: right"><i class="fa fa-upload"></i> <span data-i18n="ethip.endpoint.label.variables.import"></span></a>
-			</div>
-			<p><b>Tag Browser</b></p>
-			<div class="form-row plc-list plc-tag">
-				<ul id="node-config-browser-tag-container"><li>Click On PLC Browser Address To Update List</li></ul>
-			</div>
-		</div>
-	</div>
+        <ul style="background: #fff; min-width: 600px; margin-bottom: 20px;" id="node-config-ethip-endpoint-tabs"></ul>
+    </div>
+    <div id="node-config-ethip-endpoint-tabs-content" style="min-height: 170px; height: 95%">
+        <div id="ethip-endpoint-tab-connection" style="display:none">
+            <div class="form-row">
+                <label for="node-config-input-address"><i class="fa fa-globe"></i> <span data-i18n="ethip.endpoint.label.address"></span></label>
+                <input class="input-append-left" type="text" id="node-config-input-address" data-i18n="[placeholder]ethip.endpoint.label.address" style="width: 40%;">
+                <label for="node-config-input-slot" style="margin-left: 10px; width: 35px; "> <span data-i18n="ethip.endpoint.label.slot"></span></label>
+                <input type="text" id="node-config-input-slot" data-i18n="[placeholder]ethip.endpoint.label.port" style="width: 50px">
+            </div>
+            <div class="form-row">
+                <label for="node-config-input-cycletime"><i class="fa fa-refresh"></i> <span data-i18n="ethip.endpoint.label.cycletime"></span></label>
+                <input type="text" id="node-config-input-cycletime" data-i18n="[placeholder]ethip.endpoint.label.cycletime" style="width: 60px;"> <span>ms</span>
+            </div>
+            <div class="form-row">
+                <label for="node-config-input-timeout"><i class="fa fa-refresh"></i> <span data-i18n="ethip.endpoint.label.timeout"></span></label>
+                <input type="text" id="node-config-input-timeout" data-i18n="[placeholder]ethip.endpoint.label.timeout" style="width: 60px;"> <span>ms</span>
+            </div>
+            <div class="form-row">
+                <label for="node-config-input-name"><i class="fa fa-tag"></i> <span data-i18n="ethip.label.name"></span></label>
+                <input type="text" id="node-config-input-name" data-i18n="[placeholder]ethip.label.name">
+            </div>
+            <div class="form-row">
+                <label style="width: 40%;" for="node-config-input-connectedMess"><i class="fa fa-exchange"></i> <span data-i18n="ethip.endpoint.label.connectedMess"></span></label>
+                <input type="checkbox" id="node-config-input-connectedMess" style="width: 20px; vertical-align: middle;">
+            </div>
+
+            <p><b>PLC Browser</b></p>
+            <div class="form-row plc-list">
+                <ul id="node-config-browser-container"></ul>
+            </div>
+        </div>
+        <div id="ethip-endpoint-tab-variables" style="display:none; height: 90%;">
+            <div class="form-row eth-ip-vars-button-group" style="margin-bottom:0; height: 5%">
+                <a href="#" class="editor-button editor-button-small eth-ip-vars-btn-clean" style="margin: 4px; float: right;"><i class="fa fa-trash-o"></i> <span data-i18n="ethip.endpoint.label.variables.clean"></span></a>
+                <a href="#" class="editor-button editor-button-small eth-ip-vars-btn-add-prog" style="margin: 4px; float: right;"><i class="fa fa-plus"></i> <span data-i18n="ethip.endpoint.label.variables.add"></span></a>
+                <a href="#" class="editor-button editor-button-small eth-ip-vars-btn-expand" style="margin: 4px; float: right;"><i class="fa fa-angle-double-down"></i></a>
+                <a href="#" class="editor-button editor-button-small eth-ip-vars-btn-collapse" style="margin: 4px; float: right;"><i class="fa fa-angle-double-up"></i></a>
+                <label><b><span data-i18n="ethip.endpoint.label.variables.list"></b></span></label>
+            </div>
+            <div class="form-row node-input-variables-container-row" style="margin-bottom: 0px; max-height: 100%; overflow-y: auto">
+                <ol id="node-config-input-variables-container" style="min-height: 250px; min-width: 450px;"></ol>
+            </div>
+            <div class="form-row">
+                <a href="#" class="editor-button editor-button-small eth-ip-vars-btn-export" style="margin: 4px; float: right"><i class="fa fa-download"></i> <span data-i18n="ethip.endpoint.label.variables.export"></span></a>
+                <input type="file" id="node-config-ethip-endpoint-var-import" style="display: none"/>
+                <a href="#" class="editor-button editor-button-small eth-ip-vars-btn-import" style="margin: 4px; float: right"><i class="fa fa-upload"></i> <span data-i18n="ethip.endpoint.label.variables.import"></span></a>
+            </div>
+            <p><b>Tag Browser</b></p>
+            <div class="form-row plc-list plc-tag">
+                <ul id="node-config-browser-tag-container"><li>Click On PLC Browser Address To Update List</li></ul>
+            </div>
+        </div>
+    </div>
 </script>
 
 <script type="text/javascript">
-(function(){
+    (function(){
 
-	var saveAs = saveAs || function (e) { "use strict"; if (typeof e === "undefined" || typeof navigator !== "undefined" && /MSIE [1-9]\./.test(navigator.userAgent)) { return } var t = e.document, n = function () { return e.URL || e.webkitURL || e }, r = t.createElementNS("http://www.w3.org/1999/xhtml", "a"), o = "download" in r, a = function (e) { var t = new MouseEvent("click"); e.dispatchEvent(t) }, i = /constructor/i.test(e.HTMLElement) || e.safari, f = /CriOS\/[\d]+/.test(navigator.userAgent), u = function (t) { (e.setImmediate || e.setTimeout)(function () { throw t }, 0) }, s = "application/octet-stream", d = 1e3 * 40, c = function (e) { var t = function () { if (typeof e === "string") { n().revokeObjectURL(e) } else { e.remove() } }; setTimeout(t, d) }, l = function (e, t, n) { t = [].concat(t); var r = t.length; while (r--) { var o = e["on" + t[r]]; if (typeof o === "function") { try { o.call(e, n || e) } catch (a) { u(a) } } } }, p = function (e) { if (/^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(e.type)) { return new Blob([String.fromCharCode(65279), e], { type: e.type }) } return e }, v = function (t, u, d) { if (!d) { t = p(t) } var v = this, w = t.type, m = w === s, y, h = function () { l(v, "writestart progress write writeend".split(" ")) }, S = function () { if ((f || m && i) && e.FileReader) { var r = new FileReader; r.onloadend = function () { var t = f ? r.result : r.result.replace(/^data:[^;]*;/, "data:attachment/file;"); var n = e.open(t, "_blank"); if (!n) e.location.href = t; t = undefined; v.readyState = v.DONE; h() }; r.readAsDataURL(t); v.readyState = v.INIT; return } if (!y) { y = n().createObjectURL(t) } if (m) { e.location.href = y } else { var o = e.open(y, "_blank"); if (!o) { e.location.href = y } } v.readyState = v.DONE; h(); c(y) }; v.readyState = v.INIT; if (o) { y = n().createObjectURL(t); setTimeout(function () { r.href = y; r.download = u; a(r); h(); c(y); v.readyState = v.DONE }); return } S() }, w = v.prototype, m = function (e, t, n) { return new v(e, t || e.name || "download", n) }; if (typeof navigator !== "undefined" && navigator.msSaveOrOpenBlob) { return function (e, t, n) { t = t || e.name || "download"; if (!n) { e = p(e) } return navigator.msSaveOrOpenBlob(e, t) } } w.abort = function () { }; w.readyState = w.INIT = 0; w.WRITING = 1; w.DONE = 2; w.error = w.onwritestart = w.onprogress = w.onwrite = w.onabort = w.onerror = w.onwriteend = null; return m }(typeof self !== "undefined" && self || typeof window !== "undefined" && window || this.content); if (typeof module !== "undefined" && module.exports) { module.exports.saveAs = saveAs } else if (typeof define !== "undefined" && define !== null && define.amd !== null) { define("FileSaver.js", function () { return saveAs }) }
+            var saveAs = saveAs || function (e) { "use strict"; if (typeof e === "undefined" || typeof navigator !== "undefined" && /MSIE [1-9]\./.test(navigator.userAgent)) { return } var t = e.document, n = function () { return e.URL || e.webkitURL || e }, r = t.createElementNS("http://www.w3.org/1999/xhtml", "a"), o = "download" in r, a = function (e) { var t = new MouseEvent("click"); e.dispatchEvent(t) }, i = /constructor/i.test(e.HTMLElement) || e.safari, f = /CriOS\/[\d]+/.test(navigator.userAgent), u = function (t) { (e.setImmediate || e.setTimeout)(function () { throw t }, 0) }, s = "application/octet-stream", d = 1e3 * 40, c = function (e) { var t = function () { if (typeof e === "string") { n().revokeObjectURL(e) } else { e.remove() } }; setTimeout(t, d) }, l = function (e, t, n) { t = [].concat(t); var r = t.length; while (r--) { var o = e["on" + t[r]]; if (typeof o === "function") { try { o.call(e, n || e) } catch (a) { u(a) } } } }, p = function (e) { if (/^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(e.type)) { return new Blob([String.fromCharCode(65279), e], { type: e.type }) } return e }, v = function (t, u, d) { if (!d) { t = p(t) } var v = this, w = t.type, m = w === s, y, h = function () { l(v, "writestart progress write writeend".split(" ")) }, S = function () { if ((f || m && i) && e.FileReader) { var r = new FileReader; r.onloadend = function () { var t = f ? r.result : r.result.replace(/^data:[^;]*;/, "data:attachment/file;"); var n = e.open(t, "_blank"); if (!n) e.location.href = t; t = undefined; v.readyState = v.DONE; h() }; r.readAsDataURL(t); v.readyState = v.INIT; return } if (!y) { y = n().createObjectURL(t) } if (m) { e.location.href = y } else { var o = e.open(y, "_blank"); if (!o) { e.location.href = y } } v.readyState = v.DONE; h(); c(y) }; v.readyState = v.INIT; if (o) { y = n().createObjectURL(t); setTimeout(function () { r.href = y; r.download = u; a(r); h(); c(y); v.readyState = v.DONE }); return } S() }, w = v.prototype, m = function (e, t, n) { return new v(e, t || e.name || "download", n) }; if (typeof navigator !== "undefined" && navigator.msSaveOrOpenBlob) { return function (e, t, n) { t = t || e.name || "download"; if (!n) { e = p(e) } return navigator.msSaveOrOpenBlob(e, t) } } w.abort = function () { }; w.readyState = w.INIT = 0; w.WRITING = 1; w.DONE = 2; w.error = w.onwritestart = w.onprogress = w.onwrite = w.onabort = w.onerror = w.onwriteend = null; return m }(typeof self !== "undefined" && self || typeof window !== "undefined" && window || this.content); if (typeof module !== "undefined" && module.exports) { module.exports.saveAs = saveAs } else if (typeof define !== "undefined" && define !== null && define.amd !== null) { define("FileSaver.js", function () { return saveAs }) }
 
-	//["BOOL", "SINT", "INT", "DINT", "LINT", "USINT", "UINT", "UDINT", "REAL", "LREAL", "STIME", "DATE", "TIME_AND_DAY", "DATE_AND_STRING", "STRING", "WORD", "DWORD", "BIT_STRING", "LWORD", "STRING2", "FTIME", "LTIME", "ITIME", "STRINGN", "SHORT_STRING", "TIME", "EPATH", "ENGUNIT", "STRINGI", "STRUCT"];
-	var dataTypes = ["", "BOOL", "SINT", "INT", "DINT", "REAL", "STRING", "STRUCT", "LINT"];
+            //["BOOL", "SINT", "INT", "DINT", "LINT", "USINT", "UINT", "UDINT", "REAL", "LREAL", "STIME", "DATE", "TIME_AND_DAY", "DATE_AND_STRING", "STRING", "WORD", "DWORD", "BIT_STRING", "LWORD", "STRING2", "FTIME", "LTIME", "ITIME", "STRINGN", "SHORT_STRING", "TIME", "EPATH", "ENGUNIT", "STRINGI", "STRUCT"];
+            var dataTypes = ["", "BOOL", "SINT", "INT", "DINT", "REAL", "STRING", "STRUCT", "LINT"];
 
-	function debuglog(){
-		//console.log(arguments);
-	}
+            function debuglog(){
+                    //console.log(arguments);
+                }
 
-	function generateVarTable(){
-		var vartable = {};
-		var progItems = $("#node-config-input-variables-container").editableList('items');
+            function generateVarTable(){
+                    var vartable = {};
+                    var progItems = $("#node-config-input-variables-container").editableList('items');
 
-		progItems.each(function (i){
-			var progItem = $(this);
-			var progName = progItem.find('.eth-ip-vars-prog-name').val() || '';
+                    progItems.each(function (i){
+                            var progItem = $(this);
+                            var progName = progItem.find('.eth-ip-vars-prog-name').val() || '';
 
-			vartable[progName] = {};
+                            vartable[progName] = {};
 
-			var varItems = progItem.find('.eth-ip-vars-var-list').editableList('items');
-			varItems.each(function (j){
-				var varItem = $(this);
-				var varName = varItem.find('.eth-ip-vars-var-name').val();
-				var varType = varItem.find('.eth-ip-vars-var-type').val();
+                            var varItems = progItem.find('.eth-ip-vars-var-list').editableList('items');
+                            varItems.each(function (j){
+                                    var varItem = $(this);
+                                    var varName = varItem.find('.eth-ip-vars-var-name').val();
+                                    var varType = varItem.find('.eth-ip-vars-var-type').val();
+                                    var varMapping = varItem.find('.eth-ip-vars-var-mapping').val();
 
-				vartable[progName][varName] = {
-					type: varType
-				};
-			});
-		});
+                                    vartable[progName][varName] = {
+                                            type: varType,
+                                            mapping: varMapping
+                                        };
+                                });
+                        });
 
-		debuglog('generateVarTable', vartable);
+                    debuglog('generateVarTable', vartable);
 
-		return vartable;
-	}
-	
-	RED.nodes.registerType('eth-ip endpoint', {
-		category: 'config',
-		defaults: {
-			address: {
-				value: "",
-				validate: RED.validators.regex(/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/)
-			},
-			slot: {
-				value: "0",
-				validate: RED.validators.number()
-			},
-			cycletime: {
-				value: 3000
-			},
-			timeout: {
-				value: 10000
-			},
-			name: {
-				value: ""
-			},
-			connectedMess: {
-				value: true
-			},
-			vartable: {
-				value: {
-					'': {
-						'': {
-							type: ''
-						}
-					}
-				}
-			}
-		},
-		label: function() {
-			return this.name || this.address + ":" + this.slot;
-		},
-		oneditprepare: function() {
-			var self = this;
+                    return vartable;
+                }
 
-			//labels (i18n)
-			var labelName = this._("ethip.endpoint.label.variables.name");
-			var labelAddr = this._("ethip.endpoint.label.variables.addr");
-			var labelAdd = this._("ethip.endpoint.label.variables.add");
-			var labelDel = this._("ethip.endpoint.label.variables.del");
-			var labelGlobal = this._("ethip.endpoint.label.variables.global");
-			var labelProgram = this._("ethip.endpoint.label.variables.program");
-			var labelTag = this._("ethip.endpoint.label.variables.tag");
-			var labelConnectedMess = this._("ethip.endpoint.label.variables.connectedMess");
+            RED.nodes.registerType('eth-ip endpoint', {
+                    category: 'config',
+                    defaults: {
+                            address: {
+                                    value: "",
+                                    validate: RED.validators.regex(/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/)
+                                },
+                            slot: {
+                                    value: "0",
+                                    validate: RED.validators.number()
+                                },
+                            cycletime: {
+                                    value: 3000
+                                },
+                            timeout: {
+                                    value: 10000
+                                },
+                            name: {
+                                    value: ""
+                                },
+                            connectedMess: {
+                                    value: true
+                                },
+                            vartable: {
+                                    value: {
+                                            '': {
+                                                    '': {
+                                                            type: '',
+                                                            mapping: ''
+                                                        }
+                                                }
+                                        }
+                                }
+                        },
+                    label: function() {
+                            return this.name || this.address + ":" + this.slot;
+                        },
+                    oneditprepare: function() {
+                            var self = this;
 
-			//elms
-			var progContainer = $("#node-config-input-variables-container");
-			var btnCollapse = $('.eth-ip-vars-btn-collapse');
-			var btnExpand = $('.eth-ip-vars-btn-expand');
-			var btnAddProg = $('.eth-ip-vars-btn-add-prog');
-			var btnClean = $('.eth-ip-vars-btn-clean');
-			var btnImport = $('.eth-ip-vars-btn-import');
-			var btnExport = $('.eth-ip-vars-btn-export');
-			var browser = $("#node-config-browser-container");
-			var tagList = $("#node-config-browser-tag-container");
+                            //labels (i18n)
+                            var labelName = this._("ethip.endpoint.label.variables.name");
+                            var labelAddr = this._("ethip.endpoint.label.variables.addr");
+                            var labelAdd = this._("ethip.endpoint.label.variables.add");
+                            var labelDel = this._("ethip.endpoint.label.variables.del");
+                            var labelGlobal = this._("ethip.endpoint.label.variables.global");
+                            var labelProgram = this._("ethip.endpoint.label.variables.program");
+                            var labelTag = this._("ethip.endpoint.label.variables.tag");
+                            var labelMap = this._("ethip.endpoint.label.variables.mapping");
+                            var labelConnectedMess = this._("ethip.endpoint.label.variables.connectedMess");
 
-			// Prepare tabs
-			var tabs = RED.tabs.create({
-				id: "node-config-ethip-endpoint-tabs",
-				onchange: function(tab) {
-					$("#node-config-ethip-endpoint-tabs-content").children().hide();
-					$("#" + tab.id).show();
-				}
-			});
-			tabs.addTab({
-				id: "ethip-endpoint-tab-connection",
-				label: this._("ethip.endpoint.label.tabs.connection")
-			});
-			tabs.addTab({
-				id: "ethip-endpoint-tab-variables",
-				label: this._("ethip.endpoint.label.tabs.variables")
-			});
-			setTimeout(function() {
-				tabs.resize()
-			}, 0);
+                            //elms
+                            var progContainer = $("#node-config-input-variables-container");
+                            var btnCollapse = $('.eth-ip-vars-btn-collapse');
+                            var btnExpand = $('.eth-ip-vars-btn-expand');
+                            var btnAddProg = $('.eth-ip-vars-btn-add-prog');
+                            var btnClean = $('.eth-ip-vars-btn-clean');
+                            var btnImport = $('.eth-ip-vars-btn-import');
+                            var btnExport = $('.eth-ip-vars-btn-export');
+                            var browser = $("#node-config-browser-container");
+                            var tagList = $("#node-config-browser-tag-container");
 
-			function cleanTable(skipGlobal){
-				progContainer.empty();
-				if(skipGlobal) return;
-				progContainer.editableList('addItem', {name: '', isGlobal: true, vars: {}});
-			}
+                            // Prepare tabs
+                            var tabs = RED.tabs.create({
+                                    id: "node-config-ethip-endpoint-tabs",
+                                    onchange: function(tab) {
+                                            $("#node-config-ethip-endpoint-tabs-content").children().hide();
+                                            $("#" + tab.id).show();
+                                        }
+                                });
+                            tabs.addTab({
+                                    id: "ethip-endpoint-tab-connection",
+                                    label: this._("ethip.endpoint.label.tabs.connection")
+                                });
+                            tabs.addTab({
+                                    id: "ethip-endpoint-tab-variables",
+                                    label: this._("ethip.endpoint.label.tabs.variables")
+                                });
+                            setTimeout(function() {
+                                    tabs.resize()
+                                }, 0);
 
-			// export
-			function exportCSV() {
+                            function cleanTable(skipGlobal){
+                                    progContainer.empty();
+                                    if(skipGlobal) return;
+                                    progContainer.editableList('addItem', {name: '', isGlobal: true, vars: {}});
+                                }
 
-				var vars = generateVarTable();
-				var lines = [];
+                            // export
+                            function exportCSV() {
 
-				Object.keys(vars).forEach(function (progName){
-					Object.keys(vars[progName]).forEach(function (varName) {
-						var obj = vars[progName][varName];
+                                    var vars = generateVarTable();
+                                    var lines = [];
 
-						var line = [progName, varName, obj.type];
-						lines.push(line.join(';'));
-					});
-				});
+                                    Object.keys(vars).forEach(function (progName){
+                                            Object.keys(vars[progName]).forEach(function (varName) {
+                                                    var obj = vars[progName][varName];
 
-				saveAs(new Blob([lines.join('\r\n')]), 'ethip-endpoint' + (self.name ? '_' + self.name : '') + '.csv');
-			}
+                                                    var line = [progName, varName, obj.type, obj.mapping];
+                                                    lines.push(line.join(';'));
+                                                });
+                                        });
 
-			// import
-			function importCSV(e) {
+                                    saveAs(new Blob([lines.join('\r\n')]), 'ethip-endpoint' + (self.name ? '_' + self.name : '') + '.csv');
+                                }
 
-				var file = e.target.files[0];
-				if (!file) {
-					return;
-				}
-				var reader = new FileReader();
-				reader.onload = function (e) {
-					var res = {}, i, fields, resKeys;
-					var contents = e.target.result || '';
-					var lines = contents.split(/[\r\n]+/);
+                            // import
+                            function importCSV(e) {
 
-					if (!lines.length) {
-						alert('file is empty!');
-						return;
-					}
+                                    var file = e.target.files[0];
+                                    if (!file) {
+                                            return;
+                                        }
+                                    var reader = new FileReader();
+                                    reader.onload = function (e) {
+                                            var res = {}, i, fields, resKeys;
+                                            var contents = e.target.result || '';
+                                            var lines = contents.split(/[\r\n]+/);
 
-					debuglog('importCSV lines', lines);
+                                            if (!lines.length) {
+                                                    alert('file is empty!');
+                                                    return;
+                                                }
 
-					for (i = 0; i < lines.length; i++) {
+                                            debuglog('importCSV lines', lines);
 
-						lines[i] = lines[i].trim();
-						if (lines[i] == '') continue;
+                                            for (i = 0; i < lines.length; i++) {
 
-						fields = lines[i].split(/[\t;]/);
+                                                    lines[i] = lines[i].trim();
+                                                    if (lines[i] == '') continue;
 
-						if (fields.length < 2) {
-							alert('line must have at least two parameters, program and tag name');
-							return;
-						}
+                                                    fields = lines[i].split(/[\t;]/);
 
-						res[fields[0]] = res[fields[0]] || {};
-						res[fields[0]][fields[1]] = {
-							type: fields[2]
-						}
-					}
+                                                    if (fields.length < 2) {
+                                                            alert('line must have at least two parameters, program and tag name');
+                                                            return;
+                                                        }
 
-					debuglog('importCSV result', res)
+                                                    res[fields[0]] = res[fields[0]] || {};
+                                                    res[fields[0]][fields[1]] = {
+                                                            type: fields[2],
+                                                            mapping: fields[3] || ''
+                                                        }
+                                                }
 
-					resKeys = Object.keys(res);
-					if (resKeys.length) {
-						cleanTable(true);
+                                            debuglog('importCSV result', res)
 
-						resKeys.forEach(function(elm){
-							progContainer.editableList('addItem', {name: elm, isGlobal: elm === '', vars: res[elm]});
-						});
-					}
-				};
-				reader.readAsText(file);
-			}
+                                            resKeys = Object.keys(res);
+                                            if (resKeys.length) {
+                                                    cleanTable(true);
 
-			// Buttons
-			btnCollapse.click(function(evt) {
-				//TODO replace with the right selectors
-				progContainer.find(".eth-ip-vars-var-container").slideUp();
-				progContainer.find(".eth-ip-vars-prog-title>.eth-ip-vars-prog-chevron").css({ "transform": "rotate(-90deg)" });
-				evt.preventDefault();
-			});
-			btnExpand.click(function(evt) {
-				//TODO replace with the right selectors
-				progContainer.find(".eth-ip-vars-var-container").slideDown();
-				progContainer.find(".eth-ip-vars-prog-title>.eth-ip-vars-prog-chevron").css({ "transform": "" });
-				evt.preventDefault();
-			});
-			btnAddProg.click(function(evt) {
-				progContainer.editableList('addItem', {});
-				evt.preventDefault();
-			});
-			btnClean.click(function(evt) {
-				cleanTable();
-				evt.preventDefault();
-			});
-			btnExport.click(exportCSV);
-			btnImport.click(function(evt) {
-				$('#node-config-ethip-endpoint-var-import').click();
-			});
-			$('#node-config-ethip-endpoint-var-import').on('change', importCSV);
+                                                    resKeys.forEach(function(elm){
+                                                            progContainer.editableList('addItem', {name: elm, isGlobal: elm === '', vars: res[elm]});
+                                                        });
+                                                }
+                                        };
+                                    reader.readAsText(file);
+                                }
 
-			// toggle slide tab group content
-			var titleToggle = function (content, chevron) {
-				return function (evt) {
-					if (content.is(":visible")) {
-						content.slideUp();
-						chevron.css({ "transform": "rotate(-90deg)" });
-						//content.addClass('nr-db-sb-collapsed');
-					}
-					else {
-						content.slideDown();
-						chevron.css({ "transform": "" });
-						//content.removeClass('nr-db-sb-collapsed');
-					}
-				};
-			};
+                            // Buttons
+                            btnCollapse.click(function(evt) {
+                                    //TODO replace with the right selectors
+                                    progContainer.find(".eth-ip-vars-var-container").slideUp();
+                                    progContainer.find(".eth-ip-vars-prog-title>.eth-ip-vars-prog-chevron").css({ "transform": "rotate(-90deg)" });
+                                    evt.preventDefault();
+                                });
+                            btnExpand.click(function(evt) {
+                                    //TODO replace with the right selectors
+                                    progContainer.find(".eth-ip-vars-var-container").slideDown();
+                                    progContainer.find(".eth-ip-vars-prog-title>.eth-ip-vars-prog-chevron").css({ "transform": "" });
+                                    evt.preventDefault();
+                                });
+                            btnAddProg.click(function(evt) {
+                                    progContainer.editableList('addItem', {});
+                                    evt.preventDefault();
+                                });
+                            btnClean.click(function(evt) {
+                                    cleanTable();
+                                    evt.preventDefault();
+                                });
+                            btnExport.click(exportCSV);
+                            btnImport.click(function(evt) {
+                                    $('#node-config-ethip-endpoint-var-import').click();
+                                });
+                            $('#node-config-ethip-endpoint-var-import').on('change', importCSV);
 
-			progContainer.editableList({
-				sortable: ".eth-ip-vars-prog-handle",
-				//removable: "eth-ip-vars-prog-btn-del",
-				removable: false,
-				addButton: false,
-				addItem: function (container, i, opts){
-					container.addClass('eth-ip-vars-prog-item');
+                            // toggle slide tab group content
+                            var titleToggle = function (content, chevron) {
+                                    return function (evt) {
+                                            if (content.is(":visible")) {
+                                                    content.slideUp();
+                                                    chevron.css({ "transform": "rotate(-90deg)" });
+                                                    //content.addClass('nr-db-sb-collapsed');
+                                                }
+                                            else {
+                                                    content.slideDown();
+                                                    chevron.css({ "transform": "" });
+                                                    //content.removeClass('nr-db-sb-collapsed');
+                                                }
+                                        };
+                                };
 
-					var titleRow = $('<div/>', {class:"eth-ip-vars-prog-title"}).appendTo(container);
+                            progContainer.editableList({
+                                    sortable: ".eth-ip-vars-prog-handle",
+                                    //removable: "eth-ip-vars-prog-btn-del",
+                                    removable: false,
+                                    addButton: false,
+                                    addItem: function (container, i, opts){
+                                            container.addClass('eth-ip-vars-prog-item');
 
-					var handle = $('<i class="fa fa-bars eth-ip-vars-prog-handle"/>').appendTo(titleRow);
-					var chevron = $('<i class="fa fa-angle-down eth-ip-vars-prog-chevron"/>').appendTo(titleRow);
-					var progName;
-					if(opts.isGlobal){
-						progName = $('<span style=""/>').text(labelGlobal).appendTo(titleRow);
-					} else {
-						progName = $('<input/>',{type: "text", placeholder: labelProgram, class: "eth-ip-vars-prog-name"}).appendTo(titleRow);
-						progName.val(opts.name);
-					}
+                                            var titleRow = $('<div/>', {class:"eth-ip-vars-prog-title"}).appendTo(container);
 
-					var buttonGroup = $('<div/>', {style:"float: right"}).appendTo(titleRow);
-					var buttonAddVar = $('<a href="#" style="margin: auto 4px" class="editor-button editor-button-small"><i class="fa fa-plus"></i> ' + labelAdd + '</a>').appendTo(buttonGroup);
-					var buttonDelProg = $('<a href="#" style="margin: auto 4px" class="editor-button editor-button-small eth-ip-vars-prog-btn-del"><i class="fa fa-remove"></i></a>').appendTo(buttonGroup);
-					if(opts.isGlobal){
-						buttonDelProg.hide();
-					}
+                                            var handle = $('<i class="fa fa-bars eth-ip-vars-prog-handle"/>').appendTo(titleRow);
+                                            var chevron = $('<i class="fa fa-angle-down eth-ip-vars-prog-chevron"/>').appendTo(titleRow);
+                                            var progName;
+                                            if(opts.isGlobal){
+                                                    progName = $('<span style=""/>').text(labelGlobal).appendTo(titleRow);
+                                                } else {
+                                                        progName = $('<input/>',{type: "text", placeholder: labelProgram, class: "eth-ip-vars-prog-name"}).appendTo(titleRow);
+                                                        progName.val(opts.name);
+                                                    }
 
-					//--
+                                            var buttonGroup = $('<div/>', {style:"float: right"}).appendTo(titleRow);
+                                            var buttonAddVar = $('<a href="#" style="margin: auto 4px" class="editor-button editor-button-small"><i class="fa fa-plus"></i> ' + labelAdd + '</a>').appendTo(buttonGroup);
+                                            var buttonDelProg = $('<a href="#" style="margin: auto 4px" class="editor-button editor-button-small eth-ip-vars-prog-btn-del"><i class="fa fa-remove"></i></a>').appendTo(buttonGroup);
+                                            if(opts.isGlobal){
+                                                    buttonDelProg.hide();
+                                                }
 
-					var contentRow = $('<div/>', {class:"eth-ip-vars-var-container"}).appendTo(container);
+                                            //--
 
-					var ol = $('<ol>', {class:"eth-ip-vars-var-list"}).appendTo(contentRow).editableList({
-						addButton: false,
-						height: 'auto',
-						connectWith: '.eth-ip-vars-var-list',
-						removable: true,
-						sortable: true,
-						addItem: function (container, i, opts) {
-							container.addClass('eth-ip-vars-var-item');
+                                            var contentRow = $('<div/>', {class:"eth-ip-vars-var-container"}).appendTo(container);
 
-							var varName = $('<input/>', {type:"text", placeholder: labelTag, class:"eth-ip-vars-var-name"}).appendTo(container);
-							var varType = $('<select/>', {class: "eth-ip-vars-var-type"}).appendTo(container);
-							for (var i in dataTypes) {
-								$('<option></option>').val(dataTypes[i]).text(dataTypes[i]).appendTo(varType);
-							}
+                                            var ol = $('<ol>', {class:"eth-ip-vars-var-list"}).appendTo(contentRow).editableList({
+                                                    addButton: false,
+                                                    height: 'auto',
+                                                    connectWith: '.eth-ip-vars-var-list',
+                                                    removable: true,
+                                                    sortable: true,
+                                                    addItem: function (container, i, opts) {
+                                                            container.addClass('eth-ip-vars-var-item');
 
-							varName.val(opts.name);
-							varType.val(opts.data ? opts.data.type : undefined);
-						}
-					});
+                                                            var varName = $('<input/>', {type:"text", placeholder: labelTag, class:"eth-ip-vars-var-name"}).appendTo(container);
+                                                            var varType = $('<select/>', {class: "eth-ip-vars-var-type"}).appendTo(container);
+                                                            for (var i in dataTypes) {
+                                                                    $('<option></option>').val(dataTypes[i]).text(dataTypes[i]).appendTo(varType);
+                                                                }
+                                                            var varMapping = $('<input/>', {type:"text", placeholder: labelMap, class:"eth-ip-vars-var-mapping"}).appendTo(container);
 
-					//--
+                                                            varName.val(opts.name);
+                                                            varType.val(opts.data ? opts.data.type : undefined);
+                                                            varMapping.val(opts.data ? opts.data.mapping : undefined);
+                                                        }
+                                                });
 
-					buttonAddVar.click(function (evt) {
-						ol.editableList('addItem', {});
-						evt.stopPropagation();
-						evt.preventDefault();
-					});
-					buttonDelProg.click(function (evt) {
-						progContainer.editableList('removeItem', container.data('data'));
-						evt.stopPropagation();
-						evt.preventDefault();
-					});
-					chevron.click(titleToggle(contentRow, chevron));
+                                            //--
 
-					Object.keys(opts.vars || {}).forEach(function (elm) {
-						ol.editableList('addItem', {name: elm, data: opts.vars[elm]});
-					});
-				}
-			});
+                                            buttonAddVar.click(function (evt) {
+                                                    ol.editableList('addItem', {});
+                                                    evt.stopPropagation();
+                                                    evt.preventDefault();
+                                                });
+                                            buttonDelProg.click(function (evt) {
+                                                    progContainer.editableList('removeItem', container.data('data'));
+                                                    evt.stopPropagation();
+                                                    evt.preventDefault();
+                                                });
+                                            chevron.click(titleToggle(contentRow, chevron));
 
-			Object.keys(self.vartable).forEach(function (elm) {
-				progContainer.editableList('addItem', {name: elm, isGlobal: elm === '', vars: self.vartable[elm]});
-			})
+                                            Object.keys(opts.vars || {}).forEach(function (elm) {
+                                                    ol.editableList('addItem', {name: elm, data: opts.vars[elm]});
+                                                });
+                                        }
+                                });
 
-			// ----------------------------------------
+                            Object.keys(self.vartable).forEach(function (elm) {
+                                    progContainer.editableList('addItem', {name: elm, isGlobal: elm === '', vars: self.vartable[elm]});
+                                })
 
-			$("#node-config-input-cycletime").spinner({
-				min: 50
-			});
+                            // ----------------------------------------
 
-			$("#node-config-input-timeout").spinner({
-				min: 1000
-			});
+                            $("#node-config-input-cycletime").spinner({
+                                    min: 50
+                                });
 
-			if (self.timeout === undefined) {
-				self.timeout = 10000;
-				$("#node-config-input-timeout").val(10000);
-			}
+                            $("#node-config-input-timeout").spinner({
+                                    min: 1000
+                                });
 
-			// PLC Browser
-			
-			$.getJSON('eth-ip',function(data) {
-				data.forEach(plc => {
-					browser.append('<li class="plc-list-item"><a href="#">' + plc.socketAddress.sin_addr + '</a> : ' + plc.productName + '</li>')
-				})
+                            if (self.timeout === undefined) {
+                                    self.timeout = 10000;
+                                    $("#node-config-input-timeout").val(10000);
+                                }
 
-				browser.on('click', 'li a', function() {
-					$('#node-config-input-address').val($(this).html())
-					let params = {plcAddress: $(this).html()}
-					$.post('eth-ip-tag', params, function(data) {
-						tagList.html("")
-						data.forEach(tag => {
-							tagList.append('<li class="plc-list-item"><a href="#">' + (tag.program ? tag.program + ":" : "")  + tag.name + '</a>  type: <span class="tag-type">' + tag.type.typeName +'</span></li>')
-						})
+                            // PLC Browser
 
-						tagList.on('click', 'li a', function() {
-							self.vartable = generateVarTable();
-							let tagArray = $(this).html().split(':');
-							let tagType = $(this).next('span').html();
-							let prgName = "";
-							let tagName = "";
-							
-							let tagTypes = {
-								ASCIISTRING82: 'STRING',
-								STRING: 'STRING',
-								STRUCT: 'STRUCT',
-								BOOL: 'BOOL',
-								INT: 'INT',
-								SINT: 'SINT',
-								DINT: 'DINT',
-								LINT: 'LINT',
-								REAL: 'REAL'
-							};
+                            $.getJSON('eth-ip',function(data) {
+                                    data.forEach(plc => {
+                                            browser.append('<li class="plc-list-item"><a href="#">' + plc.socketAddress.sin_addr + '</a> : ' + plc.productName + '</li>')
+                                        })
 
-							if(!Object.keys(tagTypes).includes(tagType)) {tagType = 'STRUCT'}
+                                    browser.on('click', 'li a', function() {
+                                            $('#node-config-input-address').val($(this).html())
+                                            let params = {plcAddress: $(this).html()}
+                                            $.post('eth-ip-tag', params, function(data) {
+                                                    tagList.html("")
+                                                    data.forEach(tag => {
+                                                            tagList.append('<li class="plc-list-item"><a href="#">' + (tag.program ? tag.program + ":" : "")  + tag.name + '</a>  type: <span class="tag-type">' + tag.type.typeName +'</span></li>')
+                                                        })
 
-							if(tagArray.length > 1) {
-								prgName = tagArray[0];
-								tagName = tagArray[1];	
-							} else {
-								tagName = tagArray[0];
-							}
+                                                    tagList.on('click', 'li a', function() {
+                                                            self.vartable = generateVarTable();
+                                                            let tagArray = $(this).html().split(':');
+                                                            let tagType = $(this).next('span').html();
+                                                            let prgName = "";
+                                                            let tagName = "";
 
-							self.vartable[prgName][tagName] = {type: tagTypes[tagType]};
-							progContainer.editableList('empty')
-							Object.keys(self.vartable).forEach(function (elm) {
-								progContainer.editableList('addItem', {name: elm, isGlobal: elm === '', vars: self.vartable[elm]});
-							});
-						});
-					});
-				});
-            });
-		},
-		oneditsave: function() {
-			var node = this;
-			node.vartable = generateVarTable();
-		}
-	});
-})();
+                                                            let tagTypes = {
+                                                                    ASCIISTRING82: 'STRING',
+                                                                    STRING: 'STRING',
+                                                                    STRUCT: 'STRUCT',
+                                                                    BOOL: 'BOOL',
+                                                                    INT: 'INT',
+                                                                    SINT: 'SINT',
+                                                                    DINT: 'DINT',
+                                                                    LINT: 'LINT',
+                                                                    REAL: 'REAL'
+                                                                };
+
+                                                            if(!Object.keys(tagTypes).includes(tagType)) {tagType = 'STRUCT'}
+
+                                                            if(tagArray.length > 1) {
+                                                                    prgName = tagArray[0];
+                                                                    tagName = tagArray[1];	
+                                                                } else {
+                                                                        tagName = tagArray[0];
+                                                                    }
+
+                                                            self.vartable[prgName][tagName] = {type: tagTypes[tagType]};
+                                                            progContainer.editableList('empty')
+                                                            Object.keys(self.vartable).forEach(function (elm) {
+                                                                    progContainer.editableList('addItem', {name: elm, isGlobal: elm === '', vars: self.vartable[elm]});
+                                                                });
+                                                        });
+                                                });
+                                        });
+                                });
+                        },
+                    oneditsave: function() {
+                            var node = this;
+                            node.vartable = generateVarTable();
+                        }
+                });
+        })();
 </script>
 
 <!-- ######################################################################################## -->
 
 <script type="text/html" data-template-name="eth-ip in">
-	<div class="form-row">
-		<label for="node-input-endpoint"><i class="fa fa-bolt"></i> <span data-i18n="ethip.in.label.endpoint"></span></label>
-		<input type="text" id="node-input-endpoint" data-i18n="[placeholder]ethip.in.label.endpoint">
-	</div>
-	<div class="form-row">
-		<label for="node-input-mode"><i class="fa fa-sliders"></i> <span data-i18n="ethip.in.label.mode"></span></label>
-		<select type="text" id="node-input-mode">
-			<option value="single" data-i18n="ethip.in.mode.single"></option>
-			<option value="all-split" data-i18n="ethip.in.mode.all-split"></option>
-			<option value="all" data-i18n="ethip.in.mode.all"></option>
-		</select>
-	</div>
-	<div class="form-row ethip-input-var-row">
-		<label for="node-input-program"><i class="fa fa-random"></i> <span data-i18n="ethip.in.label.program"></span></label>
-		<select type="text" id="node-input-program">
-		</select>
-	</div>
-	<div class="form-row ethip-input-var-row">
-		<label for="node-input-variable"><i class="fa fa-random"></i> <span data-i18n="ethip.in.label.variable"></span></label>
-		<select type="text" id="node-input-variable">
-		</select>
-	</div>
-	<div class="form-row">
-		<label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="ethip.label.name"></span></label>
-		<input type="text" id="node-input-name" data-i18n="[placeholder]ethip.label.name">
-	</div>
+    <div class="form-row">
+        <label for="node-input-endpoint"><i class="fa fa-bolt"></i> <span data-i18n="ethip.in.label.endpoint"></span></label>
+        <input type="text" id="node-input-endpoint" data-i18n="[placeholder]ethip.in.label.endpoint">
+    </div>
+    <div class="form-row">
+        <label for="node-input-mode"><i class="fa fa-sliders"></i> <span data-i18n="ethip.in.label.mode"></span></label>
+        <select type="text" id="node-input-mode">
+            <option value="single" data-i18n="ethip.in.mode.single"></option>
+            <option value="all-split" data-i18n="ethip.in.mode.all-split"></option>
+            <option value="all" data-i18n="ethip.in.mode.all"></option>
+        </select>
+    </div>
+    <div class="form-row ethip-input-var-row">
+        <label for="node-input-program"><i class="fa fa-random"></i> <span data-i18n="ethip.in.label.program"></span></label>
+        <select type="text" id="node-input-program">
+        </select>
+    </div>
+    <div class="form-row ethip-input-var-row">
+        <label for="node-input-variable"><i class="fa fa-random"></i> <span data-i18n="ethip.in.label.variable"></span></label>
+        <select type="text" id="node-input-variable">
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="ethip.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]ethip.label.name">
+    </div>
+    <div class="form-row">
+        <label style="width: 40%;" for="node-input-includeTimestamp"><i class="fa fa-clock-o"></i> <span data-i18n="ethip.in.label.includeTimestamp"></span></label>
+        <input type="checkbox" id="node-input-includeTimestamp" style="width: 20px; vertical-align: middle;">
+    </div>
 </script>
 
 <script type="text/javascript">
-	RED.nodes.registerType('eth-ip in', {
-		category: 'plc',
-		defaults: {
-			endpoint: {
-				value: "",
-				type: "eth-ip endpoint",
-				required: true
-			},
-			mode: {
-				value: "single"
-			},
-			variable: {
-				value: "",
-				validate: function (value) {
-					return this.mode == "single" ? !!value : true;
-				}
-			},
-			program: {
-				value: ""
-			},
-			name: {
-				value: ""
-			}
-		},
-		color: "#D19BA1",
-		inputs: 0,
-		outputs: 1,
-		icon: "serial.png",
-		label: function() {
-			if (this.name) return this.name;
+    RED.nodes.registerType('eth-ip in', {
+            category: 'plc',
+            defaults: {
+                    endpoint: {
+                            value: "",
+                            type: "eth-ip endpoint",
+                            required: true
+                        },
+                    mode: {
+                            value: "single"
+                        },
+                    variable: {
+                            value: "",
+                            validate: function (value) {
+                                    return this.mode == "single" ? !!value : true;
+                                }
+                        },
+                    program: {
+                            value: ""
+                        },
+                    name: {
+                            value: ""
+                        },
+                    includeTimestamp: {
+                            value: false
+                    }
+                },
+            color: "#D19BA1",
+            inputs: 0,
+            outputs: 1,
+            icon: "serial.png",
+            label: function() {
+                    if (this.name) return this.name;
 
-			var endpointNode = RED.nodes.node(this.endpoint);
-			if (endpointNode) {
-				if (this.mode != 'single') {
-					return endpointNode.label();
-				}
-				if (this.program) {
-					return this.program + " / " + this.variable;
-				}
-				return this.variable || endpointNode.label();
-			}
-			return this._("ethip.in.label.name");
-		},
-		labelStyle: function() {
-			return this.name ? "node_label_italic" : "";
-		},
-		oneditprepare: function () {
-			var self = this;
+                    var endpointNode = RED.nodes.node(this.endpoint);
+                    if (endpointNode) {
+                            if (this.mode != 'single') {
+                                    return endpointNode.label();
+                                }
+                            if (this.program) {
+                                    return this.program + " / " + this.variable;
+                                }
+                            return this.variable || endpointNode.label();
+                        }
+                    return this._("ethip.in.label.name");
+                },
+            labelStyle: function() {
+                    return this.name ? "node_label_italic" : "";
+                },
+            oneditprepare: function () {
+                    var self = this;
 
-			var progList = $('#node-input-program');
-			var varList = $('#node-input-variable');
-			var modeList = $('#node-input-mode');
-			var endpointList = $("#node-input-endpoint");
-			var varDivs = $('.ethip-input-var-row');
-			var vars = {};
+                    var progList = $('#node-input-program');
+                    var varList = $('#node-input-variable');
+                    var modeList = $('#node-input-mode');
+                    var endpointList = $("#node-input-endpoint");
+                    var varDivs = $('.ethip-input-var-row');
+                    var vars = {};
 
-			function cleanupLists(cleanProg) {
-				$('#node-input-variable option').remove();
-				varList.append($('<option/>', {
-					disabled: "disabled",
-					selected: "selected",
-					style: "display:none;",
-					text: self._("ethip.in.label.variable-select"),
-					value: ""
-				}));
+                    function cleanupLists(cleanProg) {
+                            $('#node-input-variable option').remove();
+                            varList.append($('<option/>', {
+                                    disabled: "disabled",
+                                    selected: "selected",
+                                    style: "display:none;",
+                                    text: self._("ethip.in.label.variable-select"),
+                                    value: ""
+                                }));
 
-				if (!cleanProg) return;
+                            if (!cleanProg) return;
 
-				$('#node-input-program option').remove();
-			}
+                            $('#node-input-program option').remove();
+                        }
 
-			function updateProgList(endpointId) {
-				//cleanup selects
-				cleanupLists(true);
+                    function updateProgList(endpointId) {
+                            //cleanup selects
+                            cleanupLists(true);
 
-				var endpointNode = RED.nodes.node(endpointId);
-				if (!endpointNode) return;
-				vars = endpointNode.vartable || {};
+                            var endpointNode = RED.nodes.node(endpointId);
+                            if (!endpointNode) return;
+                            vars = endpointNode.vartable || {};
 
-				Object.keys(vars).forEach(function (elm) {
-					var txt = elm === "" ? self._("ethip.out.label.global") : elm;
-					progList.append($('<option/>', {
-						text: txt,
-						value: elm
-					}));
-					if (elm === self.program) {
-						progList.val(self.program);
-						updateVarList(elm);
-					}
-				});
-			}
+                            Object.keys(vars).forEach(function (elm) {
+                                    var txt = elm === "" ? self._("ethip.out.label.global") : elm;
+                                    progList.append($('<option/>', {
+                                            text: txt,
+                                            value: elm
+                                        }));
+                                    if (elm === self.program) {
+                                            progList.val(self.program);
+                                            updateVarList(elm);
+                                        }
+                                });
+                        }
 
-			function updateVarList(progName) {
-				cleanupLists(false);
+                    function updateVarList(progName) {
+                            cleanupLists(false);
 
-				if(!vars[progName]) return;
+                            if(!vars[progName]) return;
 
-				Object.keys(vars[progName]).forEach(function (elm) {
-					varList.append($('<option/>', {
-						value: elm,
-						text: elm
-					}));
-					if (elm == self.variable) {
-						varList.val(self.variable);
-					}
-				});
-			}
+                            Object.keys(vars[progName]).forEach(function (elm) {
+                                    varList.append($('<option/>', {
+                                            value: elm,
+                                            text: elm
+                                        }));
+                                    if (elm == self.variable) {
+                                            varList.val(self.variable);
+                                        }
+                                });
+                        }
 
-			progList.change(function () {
-				updateVarList(progList.val());
-			});
-			endpointList.change(function () {
-				updateProgList(endpointList.val());
-			});
-			updateProgList(self.endpoint);
+                    progList.change(function () {
+                            updateVarList(progList.val());
+                        });
+                    endpointList.change(function () {
+                            updateProgList(endpointList.val());
+                        });
+                    updateProgList(self.endpoint);
 
-			modeList.change(function () {
-				if (modeList.val() == "single") {
-					varDivs.show();
-				} else {
-					varDivs.hide();
-				}
-			});
-			modeList.change();
-		},
-		oneditsave: function() {
-			var endpointNode = RED.nodes.node($("#node-input-endpoint").val());
-			var progValue = $('#node-input-program').val();
-			var varValue = $('#node-input-variable').val();
+                    modeList.change(function () {
+                            if (modeList.val() == "single") {
+                                    varDivs.show();
+                                } else {
+                                        varDivs.hide();
+                                    }
+                        });
+                    modeList.change();
+                },
+            oneditsave: function() {
+                    var endpointNode = RED.nodes.node($("#node-input-endpoint").val());
+                    var progValue = $('#node-input-program').val();
+                    var varValue = $('#node-input-variable').val();
+                    var includeTimestampValue = $('#node-input-includeTimestamp').val();
 
-			if(!endpointNode) return;
 
-			//validate: cleanup fields if they don't exist on the endpoint 
-			if(!endpointNode.vartable[progValue]){
-				this.program = "";
-				this.variable = "";
-			} else if (!endpointNode.vartable[progValue][varValue]) {
-				this.variable = "";
-			}
-		}
-	});
+                    if(!endpointNode) return;
+
+                    //validate: cleanup fields if they don't exist on the endpoint 
+                    if(!endpointNode.vartable[progValue]){
+                            this.program = "";
+                            this.variable = "";
+                        } else if (!endpointNode.vartable[progValue][varValue]) {
+                                this.variable = "";
+                        }
+                    endpointNode.includeTimestamp = includeTimestampValue;
+                }
+        });
 </script>
 
 <!-- ######################################################################################## -->
 
 <script type="text/html" data-template-name="eth-ip out">
-	<div class="form-row">
-		<label for="node-input-endpoint"><i class="fa fa-bolt"></i> <span data-i18n="ethip.out.label.endpoint"></span></label>
-		<input type="text" id="node-input-endpoint" data-i18n="[placeholder]ethip.out.label.endpoint">
-	</div>
-	<div class="form-row">
-		<label for="node-input-program"><i class="fa fa-random"></i> <span data-i18n="ethip.out.label.program"></span></label>
-		<select type="text" id="node-input-program">
-		</select>
-	</div>
-	<div class="form-row">
-		<label for="node-input-variable"><i class="fa fa-random"></i> <span data-i18n="ethip.out.label.variable"></span></label>
-		<select type="text" id="node-input-variable">
-		</select>
-	</div>
-	<div class="form-row">
-		<label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="ethip.label.name"></span></label>
-		<input type="text" id="node-input-name" data-i18n="[placeholder]ethip.label.name">
-	</div>
-	<div class="form-tips"><span data-i18n="[html]ethip.out.disclaimer"></span></div>
+    <div class="form-row">
+        <label for="node-input-endpoint"><i class="fa fa-bolt"></i> <span data-i18n="ethip.out.label.endpoint"></span></label>
+        <input type="text" id="node-input-endpoint" data-i18n="[placeholder]ethip.out.label.endpoint">
+    </div>
+    <div class="form-row">
+        <label for="node-input-program"><i class="fa fa-random"></i> <span data-i18n="ethip.out.label.program"></span></label>
+        <select type="text" id="node-input-program">
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-variable"><i class="fa fa-random"></i> <span data-i18n="ethip.out.label.variable"></span></label>
+        <select type="text" id="node-input-variable">
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="ethip.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]ethip.label.name">
+    </div>
+    <div class="form-tips"><span data-i18n="[html]ethip.out.disclaimer"></span></div>
 </script>
 
 <script type="text/javascript">
-	RED.nodes.registerType('eth-ip out', {
-		category: 'plc',
-		defaults: {
-			endpoint: {
-				value: "",
-				type: "eth-ip endpoint",
-				required: true
-			},
-			variable: {
-				value: "",
-				//validate: function(value) { this.program ? this.value : true }
-			},
-			program: {
-				value: ""
-			},
-			name: {
-				value: ""
-			}
-		},
-		color: "#D19BA1",
-		inputs: 1,
-		outputs: 0,
-		icon: "serial.png",
-		align: 'right',
-		label: function() {
-			if (this.name) return this.name;
+    RED.nodes.registerType('eth-ip out', {
+            category: 'plc',
+            defaults: {
+                    endpoint: {
+                            value: "",
+                            type: "eth-ip endpoint",
+                            required: true
+                        },
+                    variable: {
+                            value: "",
+                            //validate: function(value) { this.program ? this.value : true }
+                        },
+                    program: {
+                            value: ""
+                        },
+                    name: {
+                            value: ""
+                        }
+                },
+            color: "#D19BA1",
+            inputs: 1,
+            outputs: 0,
+            icon: "serial.png",
+            align: 'right',
+            label: function() {
+                    if (this.name) return this.name;
 
-			var endpointNode = RED.nodes.node(this.endpoint);
-			if (endpointNode) {
-				if (this.program) {
-					return this.program + " / " + this.variable;
-				}
-				return this.variable || endpointNode.label();
-			}
-			return this._("ethip.out.label.name");
-		},
-		labelStyle: function() {
-			return this.name ? "node_label_italic" : "";
-		},
-		oneditprepare: function() {
-			var self = this;
+                    var endpointNode = RED.nodes.node(this.endpoint);
+                    if (endpointNode) {
+                            if (this.program) {
+                                    return this.program + " / " + this.variable;
+                                }
+                            return this.variable || endpointNode.label();
+                        }
+                    return this._("ethip.out.label.name");
+                },
+            labelStyle: function() {
+                    return this.name ? "node_label_italic" : "";
+                },
+            oneditprepare: function() {
+                    var self = this;
 
-			var progList = $('#node-input-program');
-			var varList = $('#node-input-variable');
-			var endpointList = $("#node-input-endpoint");
-			var vars = {};
+                    var progList = $('#node-input-program');
+                    var varList = $('#node-input-variable');
+                    var endpointList = $("#node-input-endpoint");
+                    var vars = {};
 
-			function cleanupLists(cleanProg){
-				$('#node-input-variable option').remove();
-				varList.append($('<option/>', {
-					disabled: "disabled",
-					selected: "selected",
-					style: "display:none;",
-					text: self._("ethip.out.label.variable-select"),
-					value: ""
-				}));
+                    function cleanupLists(cleanProg){
+                            $('#node-input-variable option').remove();
+                            varList.append($('<option/>', {
+                                    disabled: "disabled",
+                                    selected: "selected",
+                                    style: "display:none;",
+                                    text: self._("ethip.out.label.variable-select"),
+                                    value: ""
+                                }));
 
-				if(!cleanProg) return;
+                            if(!cleanProg) return;
 
-				$('#node-input-program option').remove();
-			}
+                            $('#node-input-program option').remove();
+                        }
 
-			function updateProgList(endpointId) {
-				//cleanup selects
-				cleanupLists(true);
-				
-				var endpointNode = RED.nodes.node(endpointId);
-				if (!endpointNode) return;
-				vars = endpointNode.vartable || {};
-				
-				Object.keys(vars).forEach(function (elm) {
-					var txt = elm === "" ? self._("ethip.out.label.global") : elm;
-					progList.append($('<option/>', {
-						text: txt,
-						value: elm
-					}));
-					if(elm === self.program){
-						progList.val(self.program);
-						updateVarList(elm);
-					}
-				});
-			}
+                    function updateProgList(endpointId) {
+                            //cleanup selects
+                            cleanupLists(true);
 
-			function updateVarList(progName) {
-				cleanupLists(false);
-				if (progList.val() == "") {
-					varList.append($('<option/>', {
-						value: "",
-						text: ""
-					}));
-				}
+                            var endpointNode = RED.nodes.node(endpointId);
+                            if (!endpointNode) return;
+                            vars = endpointNode.vartable || {};
 
-				if(!vars[progName]) return;
+                            Object.keys(vars).forEach(function (elm) {
+                                    var txt = elm === "" ? self._("ethip.out.label.global") : elm;
+                                    progList.append($('<option/>', {
+                                            text: txt,
+                                            value: elm
+                                        }));
+                                    if(elm === self.program){
+                                            progList.val(self.program);
+                                            updateVarList(elm);
+                                        }
+                                });
+                        }
 
-				Object.keys(vars[progName]).forEach(function (elm){
-					varList.append($('<option/>', {
-						value: elm,
-						text: elm
-					}));
-					if(elm == self.variable) {
-						varList.val(self.variable);
-					}
-				});
-			}
+                    function updateVarList(progName) {
+                            cleanupLists(false);
+                            if (progList.val() == "") {
+                                    varList.append($('<option/>', {
+                                            value: "",
+                                            text: ""
+                                        }));
+                                }
 
-			progList.change(function(){
-				updateVarList(progList.val());
-			});
-			endpointList.change(function() {
-				updateProgList(endpointList.val());
-			});
-			updateProgList(self.endpoint);
-		},
-		oneditsave: function () {
-			var endpointNode = RED.nodes.node($("#node-input-endpoint").val());
-			var progValue = $('#node-input-program').val();
-			var varValue = $('#node-input-variable').val();
+                            if(!vars[progName]) return;
 
-			if (!endpointNode) return;
+                            Object.keys(vars[progName]).forEach(function (elm){
+                                    varList.append($('<option/>', {
+                                            value: elm,
+                                            text: elm
+                                        }));
+                                    if(elm == self.variable) {
+                                            varList.val(self.variable);
+                                        }
+                                });
+                        }
 
-			//validate: cleanup fields if they don't exist on the endpoint 
-			if (!endpointNode.vartable[progValue]) {
-				this.program = "";
-				this.variable = "";
-			} else if (!endpointNode.vartable[progValue][varValue]) {
-				this.variable = "";
-			}
-		}
-	});
+                    progList.change(function(){
+                            updateVarList(progList.val());
+                        });
+                    endpointList.change(function() {
+                            updateProgList(endpointList.val());
+                        });
+                    updateProgList(self.endpoint);
+                },
+            oneditsave: function () {
+                    var endpointNode = RED.nodes.node($("#node-input-endpoint").val());
+                    var progValue = $('#node-input-program').val();
+                    var varValue = $('#node-input-variable').val();
+
+                    if (!endpointNode) return;
+
+                    //validate: cleanup fields if they don't exist on the endpoint 
+                    if (!endpointNode.vartable[progValue]) {
+                            this.program = "";
+                            this.variable = "";
+                        } else if (!endpointNode.vartable[progValue][varValue]) {
+                                this.variable = "";
+                            }
+                }
+        });
 </script>

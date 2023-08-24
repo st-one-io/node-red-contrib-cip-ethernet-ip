@@ -5,6 +5,7 @@
                 "name": "eth-ip in",
                 "endpoint": "PLC",
                 "mode": "Mode",
+                "includeTimestamp": "Include timestamp",
                 "program": "Scope",
                 "variable": "Tag",
                 "variable-select": "Select a tag",
@@ -49,6 +50,7 @@
                     "addr": "Address",
                     "program": "Scope",
                     "tag": "Tag",
+                    "mapping": "Mapping",
                     "connectedMess": "Connected Messaging",
                     "export": "Export",
                     "import": "Import",
@@ -83,6 +85,7 @@
         },
         "warn": {
             "invalidtagname": "Skipping tag with invalid name '__name__'",
+            "invalidmappingname": "Ignore invalid mapping name '__name__'",
             "notaglist": "Cannot read PLC data types. Only basic types supported"
         },
         "addrval": {
