@@ -628,7 +628,7 @@
 			},
 			variable: {
 				value: "",
-				validate: function(value) { this.program ? this.value : true }
+				validate: function(value) { return this.program ? this.value : true }
 			},
 			program: {
 				value: ""
