@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+ - Fix endpoint tabs, program headers and drag handles to follow the Node-RED editor theme.
+
 ## Version 1.1.3
   - Prevents PLC connection issues to crash Node-RED (#26) (thanks @nateevans)
 
